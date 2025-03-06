@@ -46,8 +46,8 @@ namespace BOxford
         private void btnCriarPartida_Click(object sender, EventArgs e)
         {
 
-            string ID = Jogo.CriarPartida(txtNomePartida.Text, txtSenhaPartida.Text, txtSenhaPartida.Text);
-            lblIDatual.Text = "ID da partida: " + ID;
+            string id = Jogo.CriarPartida(txtNomePartida.Text, txtSenhaPartida.Text, txtSenhaPartida.Text);
+            lblIDatual.Text = $"ID da partida: {id}";
         }
 
 
@@ -61,9 +61,9 @@ namespace BOxford
             string nomePartida = dadosPartida[1];
             string data = dadosPartida[2];
 
-            lblDadosID.Text = "ID: " + idPartida.ToString();
-            lblDadosPartida.Text = "Nome da partida: " + nomePartida;
-            lblDadosData.Text = "Data: " + data;
+            lblDadosID.Text = $"ID: {idPartida}";
+            lblDadosPartida.Text = $"Nome da partida: {nomePartida}";
+            lblDadosData.Text = $"Data: {data}";
 
             //Listar jogadores:
             string retorno = Jogo.ListarJogadores(idPartida);
@@ -80,10 +80,7 @@ namespace BOxford
 
 
 
-        private void lstJogadores_SelectedIndexChanged(object sender, EventArgs e)
-        {
 
-        }
 
 
 

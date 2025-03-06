@@ -115,7 +115,7 @@
             // 
             lblSenhaPartida.AutoSize = true;
             lblSenhaPartida.Font = new Font("Segoe UI", 9F);
-            lblSenhaPartida.Location = new Point(28, 161);
+            lblSenhaPartida.Location = new Point(27, 161);
             lblSenhaPartida.Name = "lblSenhaPartida";
             lblSenhaPartida.Size = new Size(98, 15);
             lblSenhaPartida.TabIndex = 7;
@@ -198,7 +198,6 @@
             lstJogadores.Name = "lstJogadores";
             lstJogadores.Size = new Size(364, 154);
             lstJogadores.TabIndex = 15;
-            lstJogadores.SelectedIndexChanged += lstJogadores_SelectedIndexChanged;
             // 
             // label5
             // 

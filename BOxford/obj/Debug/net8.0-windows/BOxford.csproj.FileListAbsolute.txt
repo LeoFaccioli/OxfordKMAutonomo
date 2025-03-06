@@ -70,3 +70,4 @@ C:\Users\leofa\source\repos\BOxford\BOxford\bin\Debug\net8.0-windows\runtimes\un
 C:\Users\leofa\source\repos\BOxford\BOxford\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Data.SqlClient.dll
 C:\Users\leofa\source\repos\BOxford\BOxford\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Diagnostics.EventLog.dll
 C:\Users\leofa\source\repos\BOxford\BOxford\bin\Debug\net8.0-windows\runtimes\win\lib\net8.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\leofa\source\repos\BOxford\BOxford\obj\Debug\net8.0-windows\BOxford.sourcelink.json
