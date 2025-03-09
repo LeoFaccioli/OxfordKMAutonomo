@@ -2,9 +2,9 @@ using KingMeServer;
 
 namespace BOxford
 {
-    public partial class Form1 : Form
+    public partial class Lobby : Form
     {
-        public Form1()
+        public Lobby()
         {
             InitializeComponent();
 
@@ -15,11 +15,9 @@ namespace BOxford
             cboFiltro.Items.Add("Todas");
             cboFiltro.Items.Add("Aberta");
             cboFiltro.Items.Add("Jogando");
-            cboFiltro.Items.Add("Encerrada");
+            cboFiltro.Items.Add("Finalizadas");
             cboFiltro.SelectedIndex = 0;
         }
-
-
 
         //Listar partidas
         private void btnListarPartidas_Click(object sender, EventArgs e)
@@ -39,17 +37,15 @@ namespace BOxford
 
             }
 
-
-
         }
 
         private void btnCriarPartida_Click(object sender, EventArgs e)
         {
-
-            string id = Jogo.CriarPartida(txtNomePartida.Text, txtSenhaPartida.Text, txtSenhaPartida.Text);
+            // Criar partida
+            string id = Jogo.CriarPartida(txtNomePartida.Text, txtSenhaPartida.Text, txtNomeGrupo.Text);
             lblIDatual.Text = $"ID da partida: {id}";
-        }
 
+        }
 
         private void lstPartidas_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -59,11 +55,11 @@ namespace BOxford
 
             int idPartida = Convert.ToInt32(dadosPartida[0]);
             string nomePartida = dadosPartida[1];
-            string data = dadosPartida[2];
+            string dataPartida = dadosPartida[2];
 
             lblDadosID.Text = $"ID: {idPartida}";
             lblDadosPartida.Text = $"Nome da partida: {nomePartida}";
-            lblDadosData.Text = $"Data: {data}";
+            lblDadosData.Text = $"Data: {dataPartida}";
 
             //Listar jogadores:
             string retorno = Jogo.ListarJogadores(idPartida);
@@ -77,16 +73,6 @@ namespace BOxford
             }
 
         }
-
-
-
-
-
-
-
-
-
-
     }
 }
 
