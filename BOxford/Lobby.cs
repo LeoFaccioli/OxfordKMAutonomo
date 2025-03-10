@@ -1,4 +1,5 @@
 using KingMeServer;
+using Microsoft.Data.SqlClient;
 
 namespace BOxford
 {
@@ -77,7 +78,7 @@ namespace BOxford
         //Entrar na partida:
         public void btnEntrarPartida_Click(object sender, EventArgs e)
         {
-           
+
             string retorno = Jogo.Entrar(Convert.ToInt32(txtIDpartida.Text), txtNomeJogador.Text, txtSenhaPartida.Text);
 
             if (retorno.StartsWith("ERRO:"))
@@ -111,7 +112,7 @@ namespace BOxford
 
 
 
-            }            
+            }
 
         }
 
@@ -122,17 +123,45 @@ namespace BOxford
             lblerro.Text = erroIniciar;
 
         }
-                
+
         //Exibir cartas
         private void btnExibirCartas_Click(object sender, EventArgs e)
         {
-            
-            string listarCartas = Jogo.ListarCartas(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
-            lblCartas.Text = listarCartas;
+            Dictionary<char, string> mapaCartas = new Dictionary<char, string>()
+            {
+                {'A', "Adilson"},
+                {'B', "Beatriz"},
+                {'C', "Claro"},
+                {'D', "Douglas"},
+                {'E', "Eduardo"},
+                {'G', "Guilherme"},
+                {'H', "Heredia"},
+                {'K', "Karin"},
+                {'L', "Leonardo"},
+                {'M', "Marios"},
+                {'Q', "Quintas"},
+                {'R', "Ranulfo"},
+                {'T', "Toshio"}
+            };
+
+            string retorno = Jogo.ListarCartas(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
+
+            List<string> nomesConvertidos = new List<string>();
+
+            foreach (char inicial in retorno) 
+            {
+                if (mapaCartas.ContainsKey(inicial))
+                {
+                    nomesConvertidos.Add(mapaCartas[inicial]); 
+                }
+            }
+
+            lblCartas.Text = "Minhas cartas:\n" + string.Join("\n", nomesConvertidos);
 
         }
     }
 }
+
 
 
 
