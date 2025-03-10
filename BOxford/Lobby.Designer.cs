@@ -46,7 +46,6 @@
             label5 = new Label();
             lblNomeGrupo = new Label();
             btnCriarPartida = new Button();
-            label4 = new Label();
             lblIDatual = new Label();
             lblLobby = new Label();
             lblNomeJogador = new Label();
@@ -54,12 +53,21 @@
             btnEntrarPartida = new Button();
             lblIdJogador = new Label();
             lblSenhaJogador = new Label();
+            txtIDpartida = new TextBox();
+            txtIDjogador = new TextBox();
+            label1 = new Label();
+            label2 = new Label();
+            txtSenha = new TextBox();
+            btnIniciarPartida = new Button();
+            btnExibirCartas = new Button();
+            lblCartas = new Label();
+            lblerro = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // btnListarPartidas
             // 
-            btnListarPartidas.Location = new Point(557, 116);
+            btnListarPartidas.Location = new Point(458, 250);
             btnListarPartidas.Name = "btnListarPartidas";
             btnListarPartidas.Size = new Size(182, 23);
             btnListarPartidas.TabIndex = 4;
@@ -71,7 +79,7 @@
             // 
             lstPartidas.FormattingEnabled = true;
             lstPartidas.ItemHeight = 15;
-            lstPartidas.Location = new Point(557, 145);
+            lstPartidas.Location = new Point(458, 279);
             lstPartidas.Name = "lstPartidas";
             lstPartidas.Size = new Size(366, 109);
             lstPartidas.TabIndex = 6;
@@ -80,7 +88,7 @@
             // lblVersao
             // 
             lblVersao.AutoSize = true;
-            lblVersao.Location = new Point(949, 9);
+            lblVersao.Location = new Point(838, 556);
             lblVersao.Name = "lblVersao";
             lblVersao.Size = new Size(41, 15);
             lblVersao.TabIndex = 3;
@@ -90,7 +98,7 @@
             // 
             lblCriarNova.AutoSize = true;
             lblCriarNova.Font = new Font("Segoe UI", 14.25F);
-            lblCriarNova.Location = new Point(24, 82);
+            lblCriarNova.Location = new Point(24, 49);
             lblCriarNova.Name = "lblCriarNova";
             lblCriarNova.Size = new Size(210, 25);
             lblCriarNova.TabIndex = 4;
@@ -100,7 +108,7 @@
             // 
             lblNomePartida.AutoSize = true;
             lblNomePartida.Font = new Font("Segoe UI", 9F);
-            lblNomePartida.Location = new Point(27, 117);
+            lblNomePartida.Location = new Point(27, 84);
             lblNomePartida.Name = "lblNomePartida";
             lblNomePartida.Size = new Size(99, 15);
             lblNomePartida.TabIndex = 6;
@@ -110,7 +118,7 @@
             // 
             lblSenhaPartida.AutoSize = true;
             lblSenhaPartida.Font = new Font("Segoe UI", 9F);
-            lblSenhaPartida.Location = new Point(27, 161);
+            lblSenhaPartida.Location = new Point(27, 128);
             lblSenhaPartida.Name = "lblSenhaPartida";
             lblSenhaPartida.Size = new Size(98, 15);
             lblSenhaPartida.TabIndex = 7;
@@ -118,14 +126,14 @@
             // 
             // txtNomePartida
             // 
-            txtNomePartida.Location = new Point(27, 135);
+            txtNomePartida.Location = new Point(27, 102);
             txtNomePartida.Name = "txtNomePartida";
             txtNomePartida.Size = new Size(373, 23);
             txtNomePartida.TabIndex = 0;
             // 
             // txtNomeGrupo
             // 
-            txtNomeGrupo.Location = new Point(27, 223);
+            txtNomeGrupo.Location = new Point(27, 190);
             txtNomeGrupo.Name = "txtNomeGrupo";
             txtNomeGrupo.ReadOnly = true;
             txtNomeGrupo.Size = new Size(373, 23);
@@ -134,7 +142,7 @@
             // 
             // txtSenhaPartida
             // 
-            txtSenhaPartida.Location = new Point(27, 179);
+            txtSenhaPartida.Location = new Point(27, 146);
             txtSenhaPartida.Name = "txtSenhaPartida";
             txtSenhaPartida.Size = new Size(373, 23);
             txtSenhaPartida.TabIndex = 1;
@@ -143,7 +151,7 @@
             // 
             cboFiltro.DropDownStyle = ComboBoxStyle.DropDownList;
             cboFiltro.FormattingEnabled = true;
-            cboFiltro.Location = new Point(784, 115);
+            cboFiltro.Location = new Point(685, 250);
             cboFiltro.Name = "cboFiltro";
             cboFiltro.Size = new Size(139, 23);
             cboFiltro.TabIndex = 5;
@@ -153,7 +161,7 @@
             groupBox1.Controls.Add(lblDadosData);
             groupBox1.Controls.Add(lblDadosID);
             groupBox1.Controls.Add(lblDadosPartida);
-            groupBox1.Location = new Point(557, 272);
+            groupBox1.Location = new Point(458, 407);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(366, 116);
             groupBox1.TabIndex = 7;
@@ -191,16 +199,16 @@
             // 
             lstJogadores.FormattingEnabled = true;
             lstJogadores.ItemHeight = 15;
-            lstJogadores.Location = new Point(557, 440);
+            lstJogadores.Location = new Point(30, 444);
             lstJogadores.Name = "lstJogadores";
-            lstJogadores.Size = new Size(364, 154);
+            lstJogadores.Size = new Size(364, 79);
             lstJogadores.TabIndex = 9;
             // 
             // label5
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label5.Location = new Point(555, 412);
+            label5.Location = new Point(28, 416);
             label5.Name = "label5";
             label5.Size = new Size(102, 25);
             label5.TabIndex = 8;
@@ -210,7 +218,7 @@
             // 
             lblNomeGrupo.AutoSize = true;
             lblNomeGrupo.Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblNomeGrupo.Location = new Point(27, 205);
+            lblNomeGrupo.Location = new Point(27, 172);
             lblNomeGrupo.Name = "lblNomeGrupo";
             lblNomeGrupo.Size = new Size(95, 15);
             lblNomeGrupo.TabIndex = 17;
@@ -218,7 +226,7 @@
             // 
             // btnCriarPartida
             // 
-            btnCriarPartida.Location = new Point(27, 253);
+            btnCriarPartida.Location = new Point(27, 269);
             btnCriarPartida.Name = "btnCriarPartida";
             btnCriarPartida.Size = new Size(375, 23);
             btnCriarPartida.TabIndex = 3;
@@ -226,23 +234,13 @@
             btnCriarPartida.UseVisualStyleBackColor = true;
             btnCriarPartida.Click += btnCriarPartida_Click;
             // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 14.25F);
-            label4.Location = new Point(559, 82);
-            label4.Name = "label4";
-            label4.Size = new Size(285, 25);
-            label4.TabIndex = 26;
-            label4.Text = "Entrar em uma partida existente:";
-            // 
             // lblIDatual
             // 
             lblIDatual.AutoSize = true;
-            lblIDatual.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            lblIDatual.Location = new Point(28, 289);
+            lblIDatual.Font = new Font("Segoe UI", 9F);
+            lblIDatual.Location = new Point(27, 219);
             lblIDatual.Name = "lblIDatual";
-            lblIDatual.Size = new Size(102, 21);
+            lblIDatual.Size = new Size(77, 15);
             lblIDatual.TabIndex = 27;
             lblIDatual.Text = "ID da partida:";
             // 
@@ -250,7 +248,7 @@
             // 
             lblLobby.AutoSize = true;
             lblLobby.Font = new Font("Segoe UI Semibold", 18F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblLobby.Location = new Point(28, 39);
+            lblLobby.Location = new Point(24, 9);
             lblLobby.Name = "lblLobby";
             lblLobby.Size = new Size(80, 32);
             lblLobby.TabIndex = 28;
@@ -259,7 +257,7 @@
             // lblNomeJogador
             // 
             lblNomeJogador.AutoSize = true;
-            lblNomeJogador.Location = new Point(28, 399);
+            lblNomeJogador.Location = new Point(27, 305);
             lblNomeJogador.Name = "lblNomeJogador";
             lblNomeJogador.Size = new Size(105, 15);
             lblNomeJogador.TabIndex = 29;
@@ -267,43 +265,133 @@
             // 
             // txtNomeJogador
             // 
-            txtNomeJogador.Location = new Point(28, 417);
+            txtNomeJogador.Location = new Point(27, 323);
             txtNomeJogador.Name = "txtNomeJogador";
             txtNomeJogador.Size = new Size(372, 23);
             txtNomeJogador.TabIndex = 30;
             // 
             // btnEntrarPartida
             // 
-            btnEntrarPartida.Location = new Point(24, 460);
+            btnEntrarPartida.Location = new Point(27, 363);
             btnEntrarPartida.Name = "btnEntrarPartida";
             btnEntrarPartida.Size = new Size(106, 35);
             btnEntrarPartida.TabIndex = 31;
             btnEntrarPartida.Text = "Entrar na Partida";
             btnEntrarPartida.UseVisualStyleBackColor = true;
+            btnEntrarPartida.Click += btnEntrarPartida_Click;
             // 
             // lblIdJogador
             // 
             lblIdJogador.AutoSize = true;
-            lblIdJogador.Location = new Point(208, 470);
+            lblIdJogador.Location = new Point(154, 373);
             lblIdJogador.Name = "lblIdJogador";
             lblIdJogador.Size = new Size(79, 15);
             lblIdJogador.TabIndex = 32;
-            lblIdJogador.Text = "Id do Jogador";
+            lblIdJogador.Text = "ID do jogador";
             // 
             // lblSenhaJogador
             // 
             lblSenhaJogador.AutoSize = true;
-            lblSenhaJogador.Location = new Point(361, 470);
+            lblSenhaJogador.Location = new Point(305, 373);
             lblSenhaJogador.Name = "lblSenhaJogador";
             lblSenhaJogador.Size = new Size(39, 15);
             lblSenhaJogador.TabIndex = 33;
             lblSenhaJogador.Text = "Senha";
             // 
+            // txtIDpartida
+            // 
+            txtIDpartida.Location = new Point(30, 239);
+            txtIDpartida.Name = "txtIDpartida";
+            txtIDpartida.Size = new Size(372, 23);
+            txtIDpartida.TabIndex = 34;
+            // 
+            // txtIDjogador
+            // 
+            txtIDjogador.Location = new Point(458, 102);
+            txtIDjogador.Name = "txtIDjogador";
+            txtIDjogador.Size = new Size(170, 23);
+            txtIDjogador.TabIndex = 35;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 9F);
+            label1.Location = new Point(458, 84);
+            label1.Name = "label1";
+            label1.Size = new Size(63, 15);
+            label1.TabIndex = 36;
+            label1.Text = "ID Jogador";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 9F);
+            label2.Location = new Point(458, 128);
+            label2.Name = "label2";
+            label2.Size = new Size(39, 15);
+            label2.TabIndex = 37;
+            label2.Text = "Senha";
+            // 
+            // txtSenha
+            // 
+            txtSenha.Location = new Point(458, 146);
+            txtSenha.Name = "txtSenha";
+            txtSenha.Size = new Size(170, 23);
+            txtSenha.TabIndex = 38;
+            // 
+            // btnIniciarPartida
+            // 
+            btnIniciarPartida.Location = new Point(458, 177);
+            btnIniciarPartida.Name = "btnIniciarPartida";
+            btnIniciarPartida.Size = new Size(170, 23);
+            btnIniciarPartida.TabIndex = 39;
+            btnIniciarPartida.Text = "Iniciar jogo";
+            btnIniciarPartida.UseVisualStyleBackColor = true;
+            btnIniciarPartida.Click += btnIniciarPartida_Click;
+            // 
+            // btnExibirCartas
+            // 
+            btnExibirCartas.Location = new Point(685, 102);
+            btnExibirCartas.Name = "btnExibirCartas";
+            btnExibirCartas.Size = new Size(75, 53);
+            btnExibirCartas.TabIndex = 40;
+            btnExibirCartas.Text = "Exibir cartas";
+            btnExibirCartas.UseVisualStyleBackColor = true;
+            btnExibirCartas.Click += btnExibirCartas_Click;
+            // 
+            // lblCartas
+            // 
+            lblCartas.AutoSize = true;
+            lblCartas.Location = new Point(766, 102);
+            lblCartas.Name = "lblCartas";
+            lblCartas.Size = new Size(83, 15);
+            lblCartas.TabIndex = 41;
+            lblCartas.Text = "Minhas cartas:";
+            // 
+            // lblerro
+            // 
+            lblerro.AutoSize = true;
+            lblerro.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblerro.ForeColor = Color.Red;
+            lblerro.Location = new Point(458, 38);
+            lblerro.Name = "lblerro";
+            lblerro.Size = new Size(0, 21);
+            lblerro.TabIndex = 42;
+            // 
             // Lobby
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1020, 645);
+            ClientSize = new Size(909, 580);
+            Controls.Add(lblerro);
+            Controls.Add(lblCartas);
+            Controls.Add(btnExibirCartas);
+            Controls.Add(btnIniciarPartida);
+            Controls.Add(txtSenha);
+            Controls.Add(label2);
+            Controls.Add(label1);
+            Controls.Add(txtIDjogador);
+            Controls.Add(txtIDpartida);
             Controls.Add(lblSenhaJogador);
             Controls.Add(lblIdJogador);
             Controls.Add(btnEntrarPartida);
@@ -311,7 +399,6 @@
             Controls.Add(lblNomeJogador);
             Controls.Add(lblLobby);
             Controls.Add(lblIDatual);
-            Controls.Add(label4);
             Controls.Add(btnCriarPartida);
             Controls.Add(lblNomeGrupo);
             Controls.Add(label5);
@@ -353,7 +440,6 @@
         private Label label5;
         private Label lblNomeGrupo;
         private Button btnCriarPartida;
-        private Label label4;
         private Label lblIDatual;
         private Label lblDadosData;
         private Label lblDadosID;
@@ -364,5 +450,14 @@
         private Button btnEntrarPartida;
         private Label lblIdJogador;
         private Label lblSenhaJogador;
+        private TextBox txtIDpartida;
+        private TextBox txtIDjogador;
+        private Label label1;
+        private Label label2;
+        private TextBox txtSenha;
+        private Button btnIniciarPartida;
+        private Button btnExibirCartas;
+        private Label lblCartas;
+        private Label lblerro;
     }
 }

@@ -15,12 +15,12 @@ namespace BOxford
             cboFiltro.Items.Add("Todas");
             cboFiltro.Items.Add("Aberta");
             cboFiltro.Items.Add("Jogando");
-            cboFiltro.Items.Add("Finalizadas");
+            cboFiltro.Items.Add("Encerradas");
             cboFiltro.SelectedIndex = 0;
         }
 
         //Listar partidas
-        private void btnListarPartidas_Click(object sender, EventArgs e)
+        public void btnListarPartidas_Click(object sender, EventArgs e)
         {
             string retorno = Jogo.ListarPartidas(cboFiltro.Text.Substring(0, 1));
             retorno = retorno.Replace("\r", "");
@@ -43,7 +43,7 @@ namespace BOxford
         {
             // Criar partida
             string id = Jogo.CriarPartida(txtNomePartida.Text, txtSenhaPartida.Text, txtNomeGrupo.Text);
-            lblIDatual.Text = $"ID da partida: {id}";
+            txtIDpartida.Text = id;
 
         }
 
@@ -71,6 +71,64 @@ namespace BOxford
             {
                 lstJogadores.Items.Add(jogadores[i]);
             }
+
+        }
+
+        //Entrar na partida:
+        public void btnEntrarPartida_Click(object sender, EventArgs e)
+        {
+           
+            string retorno = Jogo.Entrar(Convert.ToInt32(txtIDpartida.Text), txtNomeJogador.Text, txtSenhaPartida.Text);
+
+            if (retorno.StartsWith("ERRO:"))
+            {
+                lblerro.Text = retorno;
+            }
+            else
+            {
+                lblerro.Text = "";
+
+                string[] idsenha = retorno.Split(',');
+
+                if (idsenha.Length == 2)
+                {
+                    string idjogador = idsenha[0];
+                    string senhajogador = idsenha[1];
+
+                    lblIdJogador.Text = idjogador;
+                    lblSenhaJogador.Text = senhajogador;
+
+                    txtIDjogador.Text = idjogador;
+                    txtSenha.Text = senhajogador;
+
+                }
+
+                else if (idsenha.Length == 1)
+                {
+                    string idjogador = idsenha[0];
+
+                }
+
+
+
+            }            
+
+        }
+
+        // Iniciar partida
+        private void btnIniciarPartida_Click(object sender, EventArgs e)
+        {
+            string erroIniciar = Jogo.Iniciar(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
+            lblerro.Text = erroIniciar;
+
+        }
+                
+        //Exibir cartas
+        private void btnExibirCartas_Click(object sender, EventArgs e)
+        {
+            
+            string listarCartas = Jogo.ListarCartas(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
+            lblCartas.Text = listarCartas;
 
         }
     }
