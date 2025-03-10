@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BOxford")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f039354dd65cb4753af4b2b2c48c690f9e517fcb")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+80e8210b8e28f8a2e2625ec044fe405501d4efda")]
 [assembly: System.Reflection.AssemblyProductAttribute("BOxford")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BOxford")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

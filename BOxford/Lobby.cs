@@ -114,6 +114,7 @@ namespace BOxford
 
             }
 
+
         }
 
         // Iniciar partida
@@ -127,7 +128,15 @@ namespace BOxford
         //Exibir cartas
         private void btnExibirCartas_Click(object sender, EventArgs e)
         {
-            Dictionary<char, string> mapaCartas = new Dictionary<char, string>()
+            string retorno = Jogo.ListarCartas(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
+
+            if (retorno.StartsWith("ERRO:"))
+            {
+                lblerro.Text = retorno;
+            }
+            else
+            {
+                Dictionary<char, string> mapaCartas = new Dictionary<char, string>()
             {
                 {'A', "Adilson"},
                 {'B', "Beatriz"},
@@ -144,19 +153,22 @@ namespace BOxford
                 {'T', "Toshio"}
             };
 
-            string retorno = Jogo.ListarCartas(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
 
-            List<string> nomesConvertidos = new List<string>();
 
-            foreach (char inicial in retorno) 
-            {
-                if (mapaCartas.ContainsKey(inicial))
+                List<string> nomesConvertidos = new List<string>();
+
+                foreach (char inicial in retorno)
                 {
-                    nomesConvertidos.Add(mapaCartas[inicial]); 
+                    if (mapaCartas.ContainsKey(inicial))
+                    {
+                        nomesConvertidos.Add(mapaCartas[inicial]);
+                    }
                 }
+
+                lblCartas.Text = "Minhas cartas:\n" + string.Join("\n", nomesConvertidos);
             }
 
-            lblCartas.Text = "Minhas cartas:\n" + string.Join("\n", nomesConvertidos);
+
 
         }
     }
