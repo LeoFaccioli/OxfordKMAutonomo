@@ -121,7 +121,15 @@ namespace BOxford
         private void btnIniciarPartida_Click(object sender, EventArgs e)
         {
             string erroIniciar = Jogo.Iniciar(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
-            lblerro.Text = erroIniciar;
+            if (erroIniciar.StartsWith("ERRO:"))
+            {
+                lblerro.Text = erroIniciar;
+            }
+            else
+            {
+                lblerro.Text = "";
+            }
+            
 
         }
 
