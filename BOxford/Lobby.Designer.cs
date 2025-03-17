@@ -62,6 +62,16 @@
             btnExibirCartas = new Button();
             lblCartas = new Label();
             lblerro = new Label();
+            txtPersonagemSelecionado = new TextBox();
+            txtPersonagemSetor = new TextBox();
+            lblPersonagemAPosicionar = new Label();
+            lblPersonagemSetor = new Label();
+            btnPosicionarPersonagem = new Button();
+            btnVerificarVez = new Button();
+            lstPersonagens = new ListBox();
+            lstSetores = new ListBox();
+            lblIdVez = new Label();
+            lblNomeVez = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -88,7 +98,7 @@
             // lblVersao
             // 
             lblVersao.AutoSize = true;
-            lblVersao.Location = new Point(838, 556);
+            lblVersao.Location = new Point(1286, 566);
             lblVersao.Name = "lblVersao";
             lblVersao.Size = new Size(41, 15);
             lblVersao.TabIndex = 3;
@@ -351,7 +361,7 @@
             // 
             // btnExibirCartas
             // 
-            btnExibirCartas.Location = new Point(685, 102);
+            btnExibirCartas.Location = new Point(654, 102);
             btnExibirCartas.Name = "btnExibirCartas";
             btnExibirCartas.Size = new Size(75, 53);
             btnExibirCartas.TabIndex = 40;
@@ -362,7 +372,7 @@
             // lblCartas
             // 
             lblCartas.AutoSize = true;
-            lblCartas.Location = new Point(766, 102);
+            lblCartas.Location = new Point(741, 102);
             lblCartas.Name = "lblCartas";
             lblCartas.Size = new Size(83, 15);
             lblCartas.TabIndex = 41;
@@ -378,11 +388,109 @@
             lblerro.Size = new Size(0, 21);
             lblerro.TabIndex = 42;
             // 
+            // txtPersonagemSelecionado
+            // 
+            txtPersonagemSelecionado.Location = new Point(929, 44);
+            txtPersonagemSelecionado.Name = "txtPersonagemSelecionado";
+            txtPersonagemSelecionado.Size = new Size(100, 23);
+            txtPersonagemSelecionado.TabIndex = 43;
+            // 
+            // txtPersonagemSetor
+            // 
+            txtPersonagemSetor.Location = new Point(929, 102);
+            txtPersonagemSetor.Name = "txtPersonagemSetor";
+            txtPersonagemSetor.Size = new Size(100, 23);
+            txtPersonagemSetor.TabIndex = 44;
+            // 
+            // lblPersonagemAPosicionar
+            // 
+            lblPersonagemAPosicionar.AutoSize = true;
+            lblPersonagemAPosicionar.Location = new Point(929, 26);
+            lblPersonagemAPosicionar.Name = "lblPersonagemAPosicionar";
+            lblPersonagemAPosicionar.Size = new Size(73, 15);
+            lblPersonagemAPosicionar.TabIndex = 45;
+            lblPersonagemAPosicionar.Text = "Personagem";
+            // 
+            // lblPersonagemSetor
+            // 
+            lblPersonagemSetor.AutoSize = true;
+            lblPersonagemSetor.Location = new Point(929, 84);
+            lblPersonagemSetor.Name = "lblPersonagemSetor";
+            lblPersonagemSetor.Size = new Size(34, 15);
+            lblPersonagemSetor.TabIndex = 46;
+            lblPersonagemSetor.Text = "Setor";
+            // 
+            // btnPosicionarPersonagem
+            // 
+            btnPosicionarPersonagem.Location = new Point(1054, 49);
+            btnPosicionarPersonagem.Name = "btnPosicionarPersonagem";
+            btnPosicionarPersonagem.Size = new Size(82, 72);
+            btnPosicionarPersonagem.TabIndex = 47;
+            btnPosicionarPersonagem.Text = "Posicionar Personagem";
+            btnPosicionarPersonagem.UseVisualStyleBackColor = true;
+            btnPosicionarPersonagem.Click += btnPosicionarPersonagem_Click;
+            // 
+            // btnVerificarVez
+            // 
+            btnVerificarVez.Location = new Point(929, 168);
+            btnVerificarVez.Name = "btnVerificarVez";
+            btnVerificarVez.Size = new Size(100, 45);
+            btnVerificarVez.TabIndex = 48;
+            btnVerificarVez.Text = "Verificar Vez";
+            btnVerificarVez.UseVisualStyleBackColor = true;
+            btnVerificarVez.Click += btnVerificarVez_Click;
+            // 
+            // lstPersonagens
+            // 
+            lstPersonagens.FormattingEnabled = true;
+            lstPersonagens.ItemHeight = 15;
+            lstPersonagens.Location = new Point(929, 305);
+            lstPersonagens.Name = "lstPersonagens";
+            lstPersonagens.Size = new Size(140, 229);
+            lstPersonagens.TabIndex = 50;
+            // 
+            // lstSetores
+            // 
+            lstSetores.FormattingEnabled = true;
+            lstSetores.ItemHeight = 15;
+            lstSetores.Location = new Point(1087, 305);
+            lstSetores.Name = "lstSetores";
+            lstSetores.Size = new Size(140, 229);
+            lstSetores.TabIndex = 51;
+            // 
+            // lblIdVez
+            // 
+            lblIdVez.AutoSize = true;
+            lblIdVez.Location = new Point(929, 228);
+            lblIdVez.Name = "lblIdVez";
+            lblIdVez.Size = new Size(17, 15);
+            lblIdVez.TabIndex = 52;
+            lblIdVez.Text = "Id";
+            // 
+            // lblNomeVez
+            // 
+            lblNomeVez.AutoSize = true;
+            lblNomeVez.Location = new Point(1054, 228);
+            lblNomeVez.Name = "lblNomeVez";
+            lblNomeVez.Size = new Size(49, 15);
+            lblNomeVez.TabIndex = 53;
+            lblNomeVez.Text = "Jogador";
+            // 
             // Lobby
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(909, 580);
+            ClientSize = new Size(1339, 590);
+            Controls.Add(lblNomeVez);
+            Controls.Add(lblIdVez);
+            Controls.Add(lstSetores);
+            Controls.Add(lstPersonagens);
+            Controls.Add(btnVerificarVez);
+            Controls.Add(btnPosicionarPersonagem);
+            Controls.Add(lblPersonagemSetor);
+            Controls.Add(lblPersonagemAPosicionar);
+            Controls.Add(txtPersonagemSetor);
+            Controls.Add(txtPersonagemSelecionado);
             Controls.Add(lblerro);
             Controls.Add(lblCartas);
             Controls.Add(btnExibirCartas);
@@ -459,5 +567,15 @@
         private Button btnExibirCartas;
         private Label lblCartas;
         private Label lblerro;
+        private TextBox txtPersonagemSelecionado;
+        private TextBox txtPersonagemSetor;
+        private Label lblPersonagemAPosicionar;
+        private Label lblPersonagemSetor;
+        private Button btnPosicionarPersonagem;
+        private Button btnVerificarVez;
+        private ListBox lstPersonagens;
+        private ListBox lstSetores;
+        private Label lblIdVez;
+        private Label lblNomeVez;
     }
 }

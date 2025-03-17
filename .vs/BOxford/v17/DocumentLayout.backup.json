@@ -1,13 +1,13 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\leofa\\source\\repos\\BOxford\\",
+  "WorkspaceRootPath": "C:\\Users\\nilo1\\source\\repos\\OxfordKMAutonomo\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\leofa\\source\\repos\\boxford\\boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\nilo1\\source\\repos\\oxfordkmautonomo\\boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|C:\\Users\\leofa\\source\\repos\\BOxford\\boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\nilo1\\source\\repos\\oxfordkmautonomo\\boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     }
   ],
@@ -28,11 +28,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Lobby.cs",
-              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\BOxford\\BOxford\\Lobby.cs",
+              "DocumentMoniker": "C:\\Users\\nilo1\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs",
               "RelativeDocumentMoniker": "BOxford\\Lobby.cs",
-              "ToolTip": "C:\\Users\\leofa\\source\\repos\\BOxford\\BOxford\\Lobby.cs*",
+              "ToolTip": "C:\\Users\\nilo1\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs*",
               "RelativeToolTip": "BOxford\\Lobby.cs*",
-              "ViewState": "AgIAAHQAAAAAAAAAAAAIwIcAAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAANEAAAAAAAAAAAAqwN0AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-03-09T22:47:51.856Z",
               "EditorCaption": ""
@@ -41,12 +41,12 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "Lobby.cs [Projeto]",
-              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\BOxford\\BOxford\\Lobby.cs",
+              "DocumentMoniker": "C:\\Users\\nilo1\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs",
               "RelativeDocumentMoniker": "BOxford\\Lobby.cs",
-              "ToolTip": "C:\\Users\\leofa\\source\\repos\\BOxford\\BOxford\\Lobby.cs [Projeto]*",
+              "ToolTip": "C:\\Users\\nilo1\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs [Projeto]*",
               "RelativeToolTip": "BOxford\\Lobby.cs [Projeto]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-09T22:43:31.63Z",
+              "WhenOpened": "2025-03-16T21:25:55.416Z",
               "EditorCaption": " [Projeto]"
             }
           ]

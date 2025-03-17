@@ -12,6 +12,30 @@ namespace BOxford
             // Mostrar versão na tela
             lblVersao.Text = lblVersao.Text + " " + Jogo.versao;
 
+            //Mostrar os personagens na tela
+
+            string retorno = Jogo.ListarPersonagens();
+            retorno = retorno.Replace("\r", "");
+            string[] personagens = retorno.Split('\n');
+
+            lstPersonagens.Items.Clear();
+            for (int i = 0; i < personagens.Length; i++)
+            {
+                lstPersonagens.Items.Add(personagens[i]);
+            }
+
+            //Mostrar os setores na tela
+
+            string retorno2 = Jogo.ListarSetores();
+            retorno2 = retorno2.Replace("\r", "");
+            string[] setores = retorno2.Split('\n');
+
+            lstJogadores.Items.Clear();
+            for (int i = 0; i < setores.Length; i++)
+            {
+                lstSetores.Items.Add(setores[i]);
+            }
+
             //Opções de filtro
             cboFiltro.Items.Add("Todas");
             cboFiltro.Items.Add("Aberta");
@@ -129,7 +153,7 @@ namespace BOxford
             {
                 lblerro.Text = "";
             }
-            
+
 
         }
 
@@ -178,6 +202,46 @@ namespace BOxford
 
 
 
+        }
+
+        private void btnVerificarVez_Click(object sender, EventArgs e)
+        {
+
+            string partida = txtIDpartida.Text;
+            int partidaId = Convert.ToInt32(partida);
+
+            // Obtém o ID do jogador que tem a vez
+            string retorno = Jogo.VerificarVez(partidaId).Trim();
+            string[] vez = retorno.Split(',');
+
+            lblIdVez.Text = vez[0]; // ID do jogador que tem a vez
+
+            // Obtém a lista de jogadores
+            string retorno2 = Jogo.ListarJogadores(partidaId).Trim();
+            string[] jogadores = retorno2.Split('\n'); // Divide os jogadores por linha
+
+            // Percorre os jogadores para encontrar o nome do jogador que tem a vez
+            foreach (string jogador in jogadores)
+            {
+                string[] dadosJogador = jogador.Split(','); // Divide ID, Nome e Pontuação
+
+                if (dadosJogador.Length >= 2 && dadosJogador[0].Trim() == vez[0].Trim())
+                {
+                    lblNomeVez.Text = dadosJogador[1].Trim(); // Pega o Nome do jogador correspondente
+                    return; // Sai do loop assim que encontrar
+                }
+            }
+
+            // Caso não encontre o jogador, mostra um alerta
+            MessageBox.Show("Jogador com ID " + vez[0] + " não encontrado.");
+        }
+
+        private void btnPosicionarPersonagem_Click(object sender, EventArgs e)
+        {
+            string estadoAtual = Jogo.ColocarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, 
+                Convert.ToInt32(txtPersonagemSetor.Text), txtPersonagemSelecionado.Text);
+
+            
         }
     }
 }
