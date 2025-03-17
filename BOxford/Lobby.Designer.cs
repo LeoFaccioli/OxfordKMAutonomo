@@ -98,7 +98,7 @@
             // lblVersao
             // 
             lblVersao.AutoSize = true;
-            lblVersao.Location = new Point(1286, 566);
+            lblVersao.Location = new Point(1273, 566);
             lblVersao.Name = "lblVersao";
             lblVersao.Size = new Size(41, 15);
             lblVersao.TabIndex = 3;
