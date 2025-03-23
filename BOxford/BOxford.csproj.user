@@ -4,5 +4,8 @@
     <Compile Update="Lobby.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Update="PartidaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

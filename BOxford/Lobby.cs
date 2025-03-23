@@ -132,7 +132,13 @@ namespace BOxford
                 {
                     string idjogador = idsenha[0];
 
+
                 }
+                
+
+
+
+
 
 
 
@@ -177,7 +183,7 @@ namespace BOxford
                 {'E', "Eduardo"},
                 {'G', "Guilherme"},
                 {'H', "Heredia"},
-                {'K', "Karin"},
+                {'K', "Kelly"},
                 {'L', "Leonardo"},
                 {'M', "Marios"},
                 {'Q', "Quintas"},
@@ -238,11 +244,14 @@ namespace BOxford
 
         private void btnPosicionarPersonagem_Click(object sender, EventArgs e)
         {
-            string estadoAtual = Jogo.ColocarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, 
+            string estadoAtual = Jogo.ColocarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text,
                 Convert.ToInt32(txtPersonagemSetor.Text), txtPersonagemSelecionado.Text);
 
+                
             
+
         }
+
     }
 }
 
