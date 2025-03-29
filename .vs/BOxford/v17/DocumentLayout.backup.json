@@ -7,20 +7,20 @@
       "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\leofa\\source\\repos\\oxfordkmautonomo\\boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\lobby.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\leofa\\source\\repos\\oxfordkmautonomo\\boxford\\partidaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
+      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\leofa\\source\\repos\\oxfordkmautonomo\\boxford\\lobby.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\lobby.designer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\boxford\\partidaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form",
       "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\partidaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}|Form"
     },
     {
       "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\leofa\\source\\repos\\oxfordkmautonomo\\boxford\\partidaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\partidaform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|c:\\users\\leofa\\source\\repos\\oxfordkmautonomo\\boxford\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DAB70741-5E95-46B5-AAE1-38EA2F675C94}|BOxford\\BOxford.csproj|solutionrelative:boxford\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,19 +30,20 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "Program.cs",
-              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Program.cs",
-              "RelativeDocumentMoniker": "BOxford\\Program.cs",
-              "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Program.cs",
-              "RelativeToolTip": "BOxford\\Program.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAABAAAAAAAAAA==",
+              "DocumentIndex": 0,
+              "Title": "Lobby.cs",
+              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs",
+              "RelativeDocumentMoniker": "BOxford\\Lobby.cs",
+              "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs*",
+              "RelativeToolTip": "BOxford\\Lobby.cs*",
+              "ViewState": "AgIAABUBAAAAAAAAAAAUwGUBAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-23T20:53:24.782Z",
+              "WhenOpened": "2025-03-23T19:51:07.733Z",
+              "IsPinned": true,
               "EditorCaption": ""
             },
             {
@@ -54,46 +55,46 @@
               "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs [Projeto]*",
               "RelativeToolTip": "BOxford\\Lobby.cs [Projeto]*",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-23T19:01:44.703Z",
+              "WhenOpened": "2025-03-29T15:16:21.548Z",
               "EditorCaption": " [Projeto]"
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "Lobby.Designer.cs",
+              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.Designer.cs",
+              "RelativeDocumentMoniker": "BOxford\\Lobby.Designer.cs",
+              "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.Designer.cs",
+              "RelativeToolTip": "BOxford\\Lobby.Designer.cs",
+              "ViewState": "AgIAAJ8BAAAAAAAAAAAuwLIBAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-29T15:15:23.384Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "PartidaForm.cs",
+              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\PartidaForm.cs",
+              "RelativeDocumentMoniker": "BOxford\\PartidaForm.cs",
+              "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\PartidaForm.cs",
+              "RelativeToolTip": "BOxford\\PartidaForm.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAQwDAAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-03-29T03:19:32.854Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "PartidaForm.cs [Projeto]",
               "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\PartidaForm.cs",
               "RelativeDocumentMoniker": "BOxford\\PartidaForm.cs",
               "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\PartidaForm.cs [Projeto]",
               "RelativeToolTip": "BOxford\\PartidaForm.cs [Projeto]",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-23T19:46:26.741Z",
+              "WhenOpened": "2025-03-26T01:18:53.165Z",
               "EditorCaption": " [Projeto]"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "PartidaForm.cs",
-              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\PartidaForm.cs",
-              "RelativeDocumentMoniker": "BOxford\\PartidaForm.cs",
-              "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\PartidaForm.cs",
-              "RelativeToolTip": "BOxford\\PartidaForm.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAACIAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-23T19:55:39.008Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Lobby.cs",
-              "DocumentMoniker": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs",
-              "RelativeDocumentMoniker": "BOxford\\Lobby.cs",
-              "ToolTip": "C:\\Users\\leofa\\source\\repos\\OxfordKMAutonomo\\BOxford\\Lobby.cs*",
-              "RelativeToolTip": "BOxford\\Lobby.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAH4AAAAxAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-03-23T19:51:07.733Z",
-              "EditorCaption": ""
             }
           ]
         }
