@@ -62,7 +62,6 @@
             btnIniciarPartida = new Button();
             btnExibirCartas = new Button();
             lblCartas = new Label();
-            lblerro = new Label();
             txtPersonagemSelecionado = new TextBox();
             txtPersonagemSetor = new TextBox();
             lblPersonagemAPosicionar = new Label();
@@ -76,6 +75,8 @@
             btnNovoLobby = new Button();
             lblTabuleiro = new Label();
             panel1 = new Panel();
+            btnPromoverPersonagem = new Button();
+            lblerro = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -382,34 +383,24 @@
             lblCartas.TabIndex = 41;
             lblCartas.Text = "Minhas cartas:";
             // 
-            // lblerro
-            // 
-            lblerro.AutoSize = true;
-            lblerro.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            lblerro.ForeColor = Color.Red;
-            lblerro.Location = new Point(471, 35);
-            lblerro.Name = "lblerro";
-            lblerro.Size = new Size(0, 21);
-            lblerro.TabIndex = 42;
-            // 
             // txtPersonagemSelecionado
             // 
-            txtPersonagemSelecionado.Location = new Point(957, 165);
+            txtPersonagemSelecionado.Location = new Point(1050, 165);
             txtPersonagemSelecionado.Name = "txtPersonagemSelecionado";
-            txtPersonagemSelecionado.Size = new Size(163, 23);
+            txtPersonagemSelecionado.Size = new Size(138, 23);
             txtPersonagemSelecionado.TabIndex = 43;
             // 
             // txtPersonagemSetor
             // 
-            txtPersonagemSetor.Location = new Point(957, 210);
+            txtPersonagemSetor.Location = new Point(1052, 194);
             txtPersonagemSetor.Name = "txtPersonagemSetor";
-            txtPersonagemSetor.Size = new Size(163, 23);
+            txtPersonagemSetor.Size = new Size(138, 23);
             txtPersonagemSetor.TabIndex = 44;
             // 
             // lblPersonagemAPosicionar
             // 
             lblPersonagemAPosicionar.AutoSize = true;
-            lblPersonagemAPosicionar.Location = new Point(957, 147);
+            lblPersonagemAPosicionar.Location = new Point(1050, 147);
             lblPersonagemAPosicionar.Name = "lblPersonagemAPosicionar";
             lblPersonagemAPosicionar.Size = new Size(73, 15);
             lblPersonagemAPosicionar.TabIndex = 45;
@@ -418,7 +409,7 @@
             // lblPersonagemSetor
             // 
             lblPersonagemSetor.AutoSize = true;
-            lblPersonagemSetor.Location = new Point(957, 192);
+            lblPersonagemSetor.Location = new Point(1050, 192);
             lblPersonagemSetor.Name = "lblPersonagemSetor";
             lblPersonagemSetor.Size = new Size(34, 15);
             lblPersonagemSetor.TabIndex = 46;
@@ -426,11 +417,11 @@
             // 
             // btnPosicionarPersonagem
             // 
-            btnPosicionarPersonagem.Location = new Point(957, 239);
+            btnPosicionarPersonagem.Location = new Point(1050, 240);
             btnPosicionarPersonagem.Name = "btnPosicionarPersonagem";
-            btnPosicionarPersonagem.Size = new Size(163, 53);
+            btnPosicionarPersonagem.Size = new Size(138, 23);
             btnPosicionarPersonagem.TabIndex = 47;
-            btnPosicionarPersonagem.Text = "Posicionar Personagem";
+            btnPosicionarPersonagem.Text = "Posicionar";
             btnPosicionarPersonagem.UseVisualStyleBackColor = true;
             btnPosicionarPersonagem.Click += btnPosicionarPersonagem_Click;
             // 
@@ -506,11 +497,32 @@
             panel1.Size = new Size(377, 550);
             panel1.TabIndex = 56;
             // 
+            // btnPromoverPersonagem
+            // 
+            btnPromoverPersonagem.Location = new Point(1050, 269);
+            btnPromoverPersonagem.Name = "btnPromoverPersonagem";
+            btnPromoverPersonagem.Size = new Size(138, 23);
+            btnPromoverPersonagem.TabIndex = 58;
+            btnPromoverPersonagem.Text = "Promover";
+            btnPromoverPersonagem.UseVisualStyleBackColor = true;
+            btnPromoverPersonagem.Click += btnPromoverPersonagem_Click;
+            // 
+            // lblerro
+            // 
+            lblerro.AutoSize = true;
+            lblerro.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            lblerro.ForeColor = Color.Red;
+            lblerro.Location = new Point(471, 35);
+            lblerro.Name = "lblerro";
+            lblerro.Size = new Size(0, 21);
+            lblerro.TabIndex = 42;
+            // 
             // Lobby
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
+            Controls.Add(btnPromoverPersonagem);
             Controls.Add(lblTabuleiro);
             Controls.Add(btnNovoLobby);
             Controls.Add(lblNomeVez);
@@ -599,7 +611,6 @@
         private Button btnIniciarPartida;
         private Button btnExibirCartas;
         private Label lblCartas;
-        private Label lblerro;
         private TextBox txtPersonagemSelecionado;
         private TextBox txtPersonagemSetor;
         private Label lblPersonagemAPosicionar;
@@ -613,5 +624,7 @@
         private Button btnNovoLobby;
         private Label lblTabuleiro;
         private Panel panel1;
+        private Button btnPromoverPersonagem;
+        private Label lblerro;
     }
 }

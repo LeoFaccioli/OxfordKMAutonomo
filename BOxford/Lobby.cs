@@ -242,6 +242,7 @@ namespace BOxford
             lblIdVez.Text = vez[0]; // ID do jogador que tem a vez
 
             string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
+            
 
             // Obtém a lista de jogadores
             string retorno2 = Jogo.ListarJogadores(partidaId).Trim();
@@ -261,6 +262,7 @@ namespace BOxford
 
             AtualizarTabuleiro(estadoTabuleiro);
 
+
             // Caso não encontre o jogador, mostra um alerta
             if (string.IsNullOrEmpty(lblNomeVez.Text))
             {
@@ -275,6 +277,8 @@ namespace BOxford
         {
             string estadoAtual = Jogo.ColocarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text,
                Convert.ToInt32(txtPersonagemSetor.Text), txtPersonagemSelecionado.Text);
+
+            AtualizarTabuleiro(estadoAtual);
         }
 
 
@@ -304,7 +308,9 @@ namespace BOxford
         { 1, new Point(555, 440) },
         { 2, new Point(555, 360) },
         { 3, new Point(555, 280) },
-        { 4, new Point(555, 200) }
+        { 4, new Point(555, 200) },
+        { 5, new Point(555, 120) },
+        { 10, new Point(634, 51) }
     };
 
             // Verifica se o setor existe
@@ -364,7 +370,23 @@ namespace BOxford
             Form novoFormulario = new Lobby();
             novoFormulario.Show();
         }
-       
+
+        private void btnPromoverPersonagem_Click(object sender, EventArgs e)
+        {
+            Jogo.Promover(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, txtPersonagemSelecionado.Text);
+
+    string partida = txtIDpartida.Text;
+    int partidaId = Convert.ToInt32(partida);
+
+    // Obtém o ID do jogador que tem a vez
+    string retorno = Jogo.VerificarVez(partidaId).Trim();
+    string[] vez = retorno.Split(',');
+    string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+    string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
+
+    AtualizarTabuleiro(estadoTabuleiro);
+        }
     }
 }
 

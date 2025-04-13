@@ -4,6 +4,13 @@
         <name>KingMeServer</name>
     </assembly>
     <members>
+        <member name="T:KingMeServer.Jogo">
+            <summary>
+            Classe de interface com o jogo "King Me"
+            PI 3 - Sistema Autônomo
+            Thiago Claro
+            </summary>
+        </member>
         <member name="F:KingMeServer.Jogo.versao">
             <summary>
             Versão da DLL do jogo.
@@ -44,9 +51,9 @@
             <summary>
             Envia um comando iniciando uma determinada partida. Muda o Status da mesma de A para J
             </summary>
-            <param name="partida">Id da partida a ser iniciada</param>
-            <param name="senhaPartida">Senha da partida</param>
-            <returns></returns>
+            <param name="jogador">Id do jogador</param>
+            <param name="senha">Senha do jogador</param>
+            <returns>Um idJogador indicando quem foi sorteado para iniciar jogando</returns>
         </member>
         <member name="M:KingMeServer.Jogo.ColocarPersonagem(System.Int32,System.String,System.Int32,System.String)">
             <summary>
@@ -62,8 +69,8 @@
             <summary>
             Verifica qual é o jogador da "vez", e o estado atual do tabuleiro
             </summary>
-            <param name="jogador">Id do jogador que está fazendo a consulta</param>
-            <returns>Id de um jogador e o estado do tabuleiro nas linhas seguintes</returns>
+            <param name="idPartida">Id da partida consultada</param>
+            <returns>Id do jogador da vez, status da partida, rodada, e fase atual do jogo. Depois, o estado do tabuleiro nas linhas seguintes</returns>
         </member>
         <member name="M:KingMeServer.Jogo.Promover(System.Int32,System.String,System.String)">
             <summary>
@@ -72,11 +79,11 @@
             <param name="jogador">Id do jogador</param>
             <param name="senha">Senha do jogador</param>
             <param name="personagem">Primeira letra do nome do personagem a ser promovido</param>
-            <returns></returns>
+            <returns>O estado do tabuleiro após a jogada</returns>
         </member>
         <member name="M:KingMeServer.Jogo.Votar(System.Int32,System.String,System.String)">
             <summary>
-            Vota S ou N em um personagem que está na presidencia. Caso todos jogadores votem S, a rodada é finalizada.
+            Vota S ou N em um personagem que está no trono. Caso todos jogadores votem S, a rodada é finalizada.
             </summary>
             <param name="jogador">Id do jogador</param>
             <param name="senha">Senha do jogador</param>
@@ -87,13 +94,13 @@
             <summary>
             Exibe uma lista com os nomes de todos os personagens cadastrados no jogo
             </summary>
-            <returns></returns>
+            <returns>Nome dos personagens</returns>
         </member>
         <member name="M:KingMeServer.Jogo.ListarSetores">
             <summary>
             Exibe uma lista com id e nome de todos os setores. O id é equivalente à pontuação de cada setor.
             </summary>
-            <returns></returns>
+            <returns>id do setor (pontos), e seu nome</returns>
         </member>
         <member name="M:KingMeServer.Jogo.ListarCartas(System.Int32,System.String)">
             <summary>
@@ -101,22 +108,20 @@
             </summary>
             <param name="jogador">Id do jogador</param>
             <param name="senha">Senha do jogador</param>
-            <returns></returns>
+            <returns>Sequencia de caracteres com a primeira letra de cada personagem favorito da carta sorteada</returns>
         </member>
         <member name="M:KingMeServer.Jogo.ExibirUltimaVotacao(System.Int32)">
             <summary>
             Exibe como foi o voto de cada jogador na última votação já finalizada desta partida.
             </summary>
-            <param name="jogador">Id do jogador</param>
-            <param name="senha">Senha do jogador</param>
-            <returns></returns>
+            <param name="partida">Id da partida</param>
+            <returns>Personagem,id do jogador, voto (S/N)</returns>
         </member>
-        <member name="M:KingMeServer.Jogo.ConsultarHistorico(System.Int32,System.Boolean)">
+        <member name="M:KingMeServer.Jogo.ConsultarHistorico(System.Int32,System.Boolean,System.Boolean)">
             <summary>
             Exibe o histórico de jogadas, desde o último movimento do jogador que está fazendo a solicitação
             </summary>
-            <param name="jogador">iId do jogador</param>
-            <param name="senha">Senha do jogador</param>
+            <param name="partida">iId da partida</param>
             <param name="formatado">True para retornar o histórico com o texto formatado para exibição</param>
             <returns></returns>
         </member>
