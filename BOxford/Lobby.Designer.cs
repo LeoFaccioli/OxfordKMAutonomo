@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Lobby));
             btnListarPartidas = new Button();
             lstPartidas = new ListBox();
@@ -77,6 +78,8 @@
             panel1 = new Panel();
             btnPromoverPersonagem = new Button();
             lblerro = new Label();
+            tmrVerificaVez = new System.Windows.Forms.Timer(components);
+            lblControle = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -392,7 +395,7 @@
             // 
             // txtPersonagemSetor
             // 
-            txtPersonagemSetor.Location = new Point(1052, 194);
+            txtPersonagemSetor.Location = new Point(1050, 210);
             txtPersonagemSetor.Name = "txtPersonagemSetor";
             txtPersonagemSetor.Size = new Size(138, 23);
             txtPersonagemSetor.TabIndex = 44;
@@ -517,11 +520,26 @@
             lblerro.Size = new Size(0, 21);
             lblerro.TabIndex = 42;
             // 
+            // tmrVerificaVez
+            // 
+            tmrVerificaVez.Interval = 5000;
+            tmrVerificaVez.Tick += tmrVerificaVez_Tick;
+            // 
+            // lblControle
+            // 
+            lblControle.AutoSize = true;
+            lblControle.Location = new Point(887, 159);
+            lblControle.Name = "lblControle";
+            lblControle.Size = new Size(20, 15);
+            lblControle.TabIndex = 59;
+            lblControle.Text = "Pe";
+            // 
             // Lobby
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
+            Controls.Add(lblControle);
             Controls.Add(btnPromoverPersonagem);
             Controls.Add(lblTabuleiro);
             Controls.Add(btnNovoLobby);
@@ -626,5 +644,7 @@
         private Panel panel1;
         private Button btnPromoverPersonagem;
         private Label lblerro;
+        private System.Windows.Forms.Timer tmrVerificaVez;
+        private Label lblControle;
     }
 }

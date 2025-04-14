@@ -219,3 +219,5 @@ C:\Users\leofa\source\repos\OxfordKMAutonomo\BOxford\obj\Debug\net8.0-windows\BO
 C:\Users\leofa\source\repos\OxfordKMAutonomo\BOxford\obj\Debug\net8.0-windows\ref\BOxford.dll
 C:\Users\leofa\source\repos\OxfordKMAutonomo\BOxford\obj\Debug\net8.0-windows\BOxford.Properties.Resources.resources
 C:\Users\leofa\source\repos\OxfordKMAutonomo\BOxford\obj\Debug\net8.0-windows\BOxford.PartidaForm.resources
+C:\Users\nilo1\Source\Repos\OxfordKMAutonomo\BOxford\obj\Debug\net8.0-windows\BOxford.PartidaForm.resources
+C:\Users\nilo1\Source\Repos\OxfordKMAutonomo\BOxford\obj\Debug\net8.0-windows\BOxford.Properties.Resources.resources

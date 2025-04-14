@@ -1,6 +1,7 @@
 using KingMeServer;
 using Microsoft.Data.SqlClient;
 using Microsoft.Identity.Client;
+using System;
 using System.Web;
 
 namespace BOxford
@@ -35,6 +36,7 @@ namespace BOxford
         public Lobby()
         {
             InitializeComponent();
+
 
             // Mostrar versão na tela
             lblVersao.Text = lblVersao.Text + " " + Jogo.versao;
@@ -177,7 +179,8 @@ namespace BOxford
             {
                 lblerro.Text = "";
             }
-
+            tmrVerificaVez.Enabled = true;
+            MessageBox.Show("Timer Iniciado");
 
         }
 
@@ -242,7 +245,7 @@ namespace BOxford
             lblIdVez.Text = vez[0]; // ID do jogador que tem a vez
 
             string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
-            
+
 
             // Obtém a lista de jogadores
             string retorno2 = Jogo.ListarJogadores(partidaId).Trim();
@@ -375,18 +378,164 @@ namespace BOxford
         {
             Jogo.Promover(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, txtPersonagemSelecionado.Text);
 
-    string partida = txtIDpartida.Text;
-    int partidaId = Convert.ToInt32(partida);
+            string partida = txtIDpartida.Text;
+            int partidaId = Convert.ToInt32(partida);
 
-    // Obtém o ID do jogador que tem a vez
-    string retorno = Jogo.VerificarVez(partidaId).Trim();
-    string[] vez = retorno.Split(',');
-    string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+            // Obtém o ID do jogador que tem a vez
+            string retorno = Jogo.VerificarVez(partidaId).Trim();
+            string[] vez = retorno.Split(',');
+            string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
 
-    string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
+            string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
 
-    AtualizarTabuleiro(estadoTabuleiro);
+            AtualizarTabuleiro(estadoTabuleiro);
         }
+
+        private string[] VerificarVez()
+        {
+            string partida = txtIDpartida.Text;
+            int partidaId = Convert.ToInt32(partida);
+
+            // Obtém o ID do jogador que tem a vez
+            string retorno = Jogo.VerificarVez(partidaId).Trim();
+            string[] vez = retorno.Split(',');
+            string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+            lblIdVez.Text = vez[0]; // ID do jogador que tem a vez
+
+            string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
+
+
+            // Obtém a lista de jogadores
+            string retorno2 = Jogo.ListarJogadores(partidaId).Trim();
+            string[] jogadores = retorno2.Split('\n'); // Divide os jogadores por linha
+
+            // Percorre os jogadores para encontrar o nome do jogador que tem a vez
+            foreach (string jogador in jogadores)
+            {
+                string[] dadosJogador = jogador.Split(','); // Divide ID, Nome e Pontuação
+
+                if (dadosJogador.Length >= 2 && dadosJogador[0].Trim() == vez[0].Trim())
+                {
+                    lblNomeVez.Text = dadosJogador[1].Trim(); // Pega o Nome do jogador correspondente
+                    break; // Sai do loop assim que encontrar
+                }
+            }
+
+            // Caso não encontre o jogador, mostra um alerta
+            if (string.IsNullOrEmpty(lblNomeVez.Text))
+            {
+                MessageBox.Show("Jogador com ID " + vez[0] + " não encontrado.");
+            }
+
+            AtualizarTabuleiro(estadoTabuleiro);
+            return vez;
+
+
+        }
+
+        List<string> personagensColocados = new List<string>();
+
+        Dictionary<int, List<string>> setores = new Dictionary<int, List<string>>()
+        {
+            { 1, new List<string>() },
+            { 2, new List<string>() },
+            { 3, new List<string>() },
+            { 4, new List<string>() }
+        };
+
+        Random random = new Random();
+
+        /*bool EmFaseSetup()
+        {
+            int totalPersonagensColocados = setores.Values.Sum(setor => setor.Count);
+            MessageBox.Show("" + totalPersonagensColocados);
+            return totalPersonagensColocados < 13; // ou outro número que represente o fim do setup
+        }
+        */
+        private void tmrVerificaVez_Tick(object sender, EventArgs e)
+        {
+            tmrVerificaVez.Enabled = false;
+            string[] vez = VerificarVez();
+            if (vez[0] == lblIdJogador.Text)            
+            {
+                string personagem = SortearPersonagemDisponivel();
+                if (string.IsNullOrWhiteSpace(personagem))
+                {
+                    Console.WriteLine("Nenhum personagem disponível para posicionar.");
+                    tmrVerificaVez.Enabled = true;
+                    return;
+                }
+
+                int setor = SortearSetorDisponivel();
+                if (setor == -1)
+                {
+                    Console.WriteLine("Todos os setores estão cheios.");
+                    tmrVerificaVez.Enabled = true;
+                    return;
+                }
+
+                int idJogador = Convert.ToInt32(txtIDjogador.Text);
+                string senha = txtSenha.Text;
+
+                PosicionarPersonagem(idJogador, senha, personagem, setor);
+            }
+
+            tmrVerificaVez.Enabled = true;
+        }
+
+        private string SortearPersonagemDisponivel()
+        {
+            string retorno = Jogo.ListarPersonagens();
+            retorno = retorno.Replace("\r", "");
+            string[] todos = retorno.Split('\n');
+
+            List<string> disponiveis = todos
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Where(p => !personagensColocados.Contains(p.Trim()))
+                .ToList();
+
+            if (disponiveis.Count == 0)
+                return null;
+
+            return disponiveis[random.Next(disponiveis.Count)];
+        }
+
+        private int SortearSetorDisponivel()
+        {
+            List<int> setoresDisponiveis = setores.Where(setor => setor.Value.Count < 4)
+                .Select(setor => setor.Key)
+                .ToList();
+
+            if (setoresDisponiveis.Count == 0)
+                return -1;
+
+            return setoresDisponiveis[random.Next(setoresDisponiveis.Count)];
+        }
+
+        private void PosicionarPersonagem(int idJogador, string senha, string personagem, int setor)
+        {
+            if (!string.IsNullOrWhiteSpace(personagem))
+            {
+                string inicial = personagem.Substring(0, 1);
+
+                string estadoAtual = Jogo.ColocarPersonagem(idJogador, senha, setor, inicial);
+
+                personagensColocados.Add(personagem.Trim());
+                setores[setor].Add(personagem.Trim());
+
+                lblControle.Text += $"Colocando personagem '{personagem}' no setor {setor}." + "\n";
+
+                AtualizarTabuleiro(estadoAtual);
+            }
+            else
+            {
+                // log, erro, ou apenas retorna e evita quebrar o código
+                Console.WriteLine("Personagem inválido sorteado.");
+                return;
+            }
+        }
+        
     }
 }
 
