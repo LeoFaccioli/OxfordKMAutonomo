@@ -433,6 +433,21 @@ namespace BOxford
 
 
         }
+        private string EstadoAtualTabuleiro()
+        {
+            string partida = txtIDpartida.Text;
+            int partidaId = Convert.ToInt32(partida);
+
+            // Obtém o ID do jogador que tem a vez
+            string retorno = Jogo.VerificarVez(partidaId).Trim();
+            string[] vez = retorno.Split(',');
+            string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+
+            string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
+
+            return estadoTabuleiro;
+        }
 
         List<string> personagensColocados = new List<string>();
 
@@ -441,48 +456,113 @@ namespace BOxford
             { 1, new List<string>() },
             { 2, new List<string>() },
             { 3, new List<string>() },
-            { 4, new List<string>() }
+            { 4, new List<string>() },
+            { 5, new List<string>() },
+            { 10, new List<string>()}
         };
 
         Random random = new Random();
 
-        /*bool EmFaseSetup()
-        {
-            int totalPersonagensColocados = setores.Values.Sum(setor => setor.Count);
-            MessageBox.Show("" + totalPersonagensColocados);
-            return totalPersonagensColocados < 13; // ou outro número que represente o fim do setup
-        }
-        */
+
         private void tmrVerificaVez_Tick(object sender, EventArgs e)
         {
             tmrVerificaVez.Enabled = false;
+
             string[] vez = VerificarVez();
-            if (vez[0] == lblIdJogador.Text)            
+
+            if (vez == null)
             {
-                string personagem = SortearPersonagemDisponivel();
-                if (string.IsNullOrWhiteSpace(personagem))
-                {
-                    Console.WriteLine("Nenhum personagem disponível para posicionar.");
-                    tmrVerificaVez.Enabled = true;
-                    return;
-                }
-
-                int setor = SortearSetorDisponivel();
-                if (setor == -1)
-                {
-                    Console.WriteLine("Todos os setores estão cheios.");
-                    tmrVerificaVez.Enabled = true;
-                    return;
-                }
-
-                int idJogador = Convert.ToInt32(txtIDjogador.Text);
-                string senha = txtSenha.Text;
-
-                PosicionarPersonagem(idJogador, senha, personagem, setor);
+                tmrVerificaVez.Enabled = true;
+                return;
             }
 
+            string idJogadorVez = vez[0];
+            string faseAtual = vez[3].ToUpper();
+
+            if (idJogadorVez == lblIdJogador.Text)
+            {
+                if (faseAtual == "S")
+                {
+                    string personagem = SortearPersonagemDisponivel();
+                    if (string.IsNullOrWhiteSpace(personagem))
+                    {
+                        Console.WriteLine("Nenhum personagem disponível para posicionar.");
+                        tmrVerificaVez.Enabled = true;
+                        return;
+                    }
+
+                    int setor = SortearSetorDisponivel();
+                    if (setor == -1)
+                    {
+                        Console.WriteLine("Todos os setores estão cheios.");
+                        tmrVerificaVez.Enabled = true;
+                        return;
+                    }
+
+                    int idJogador = Convert.ToInt32(txtIDjogador.Text);
+                    string senha = txtSenha.Text;
+
+                    PosicionarPersonagem(idJogador, senha, personagem, setor);
+                    EstadoAtualTabuleiro();
+                }
+                else if (faseAtual == "P")
+                {
+                    PromoverPersonagens();
+                    EstadoAtualTabuleiro();
+                }
+            }
+            EstadoAtualTabuleiro();
             tmrVerificaVez.Enabled = true;
         }
+
+        private void PromoverPersonagens()
+        {
+            int idJogador = Convert.ToInt32(txtIDjogador.Text);
+            string senha = txtSenha.Text;
+
+            // Setores de onde os personagens podem ser promovidos (0 até 5)
+            for (int setorAtual = 0; setorAtual <= 5; setorAtual++)
+            {
+                List<string> personagensNoSetor = setores[setorAtual];
+
+                foreach (string personagem in personagensNoSetor.ToList()) // Cópia para evitar erro ao modificar
+                {
+                    int proximoSetor;
+
+                    if (setorAtual == 5)
+                        proximoSetor = 10;
+                    else
+                        proximoSetor = setorAtual + 1;
+
+                    // Cria a lista do próximo setor, se ainda não existir
+                    if (!setores.ContainsKey(proximoSetor))
+                        setores[proximoSetor] = new List<string>();
+
+                    int limitePersonagens;
+
+                    if (proximoSetor == 10)
+                        limitePersonagens = 1;
+                    else
+                        limitePersonagens = 4;
+
+                    bool setorTemEspaco = setores[proximoSetor].Count < limitePersonagens;
+
+                    if (setorTemEspaco)
+                    {
+                        string resultado = Jogo.Promover(idJogador, senha, personagem);
+
+                        setores[setorAtual].Remove(personagem);
+                        setores[proximoSetor].Add(personagem);
+
+                        lblControle.Text += $"Promovido: '{personagem}' do setor {setorAtual} -> {proximoSetor} ({resultado})\n";
+                        return; // Remove esta linha se quiser promover todos possíveis de uma vez
+                    }
+                }
+            }
+
+            lblControle.Text += "Nenhuma promoção possível no momento.\n";
+        }
+
 
         private string SortearPersonagemDisponivel()
         {
