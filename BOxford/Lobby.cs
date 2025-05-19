@@ -481,6 +481,21 @@ namespace BOxford
                 {
                     if (faseAtual == "S")
                     {
+                        string personagem = SortearPersonagemDisponivel();
+                        if (personagem == null)
+                        {
+                            Console.WriteLine("Nenhum personagem disponível para posicionar.");
+                            tmrVerificaVez.Enabled = true;
+                            return;
+                        }
+                        int setor = SortearSetorDisponivel();
+                        if (setor == -1)
+                        {
+                            Console.WriteLine("Todos os setores válidos estão cheios.");
+                            tmrVerificaVez.Enabled = true;
+                            return;
+                        }
+
                         // Resetar listas se acabou de entrar na fase de setup
                         if (setores.Values.All(list => list.Count == 0))
                         {
@@ -490,25 +505,8 @@ namespace BOxford
                                 setores[key].Clear();
                             }
                         }
-
-                        string personagem = SortearPersonagemDisponivel();
-                        if (string.IsNullOrWhiteSpace(personagem))
-                        {
-                            Console.WriteLine("Nenhum personagem disponível para posicionar.");
-                            tmrVerificaVez.Enabled = true;
-                            return;
-                        }
-
-                        int setor = SortearSetorDisponivel();
-                        if (setor == -1)
-                        {
-                            Console.WriteLine("Todos os setores estão cheios.");
-                            tmrVerificaVez.Enabled = true;
-                            return;
-                        }
-
                         PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text,
-                                           personagem, setor);
+                                   personagem, setor);
                     }
                     else if (faseAtual == "P")
                     {
@@ -574,56 +572,98 @@ namespace BOxford
 
         private string SortearPersonagemDisponivel()
         {
+            // Primeiro obtém a lista atual de personagens do jogo
             string retorno = Jogo.ListarPersonagens();
+            if (retorno.StartsWith("ERRO:"))
+            {
+                Console.WriteLine($"Erro ao listar personagens: {retorno}");
+                return null;
+            }
+
             retorno = retorno.Replace("\r", "");
             string[] todos = retorno.Split('\n');
 
+            // Obtém o estado atual do tabuleiro para verificar personagens já posicionados
+            string estadoTabuleiro = EstadoAtualTabuleiro();
+            var personagensNoTabuleiro = ObterPersonagensNoTabuleiro(estadoTabuleiro);
+
+            // Filtra personagens disponíveis
             List<string> disponiveis = todos
                 .Where(p => !string.IsNullOrWhiteSpace(p))
-                .Where(p => !personagensColocados.Contains(p.Trim()))
+                .Where(p => !personagensNoTabuleiro.Contains(p.Trim()))
                 .ToList();
 
             if (disponiveis.Count == 0)
+            {
+                Console.WriteLine("Todos os personagens já foram posicionados.");
                 return null;
+            }
 
             return disponiveis[random.Next(disponiveis.Count)];
         }
 
+        // Método auxiliar para extrair personagens do tabuleiro
+        private HashSet<string> ObterPersonagensNoTabuleiro(string estadoTabuleiro)
+        {
+            var personagens = new HashSet<string>();
+            string[] linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string linha in linhas)
+            {
+                string[] partes = linha.Split(',');
+                if (partes.Length == 2)
+                {
+                    personagens.Add(partes[1].Trim());
+                }
+            }
+
+            return personagens;
+        }
+
         private int SortearSetorDisponivel()
         {
-            List<int> setoresDisponiveis = setores.Where(setor => setor.Value.Count < 4)
-                .Select(setor => setor.Key)
+            // Durante a fase de setup, só permitir setores 1-4
+            var setoresValidos = setores
+                .Where(kv => kv.Key >= 1 && kv.Key <= 4)  // Apenas setores 1-4
+                .Where(kv => kv.Value.Count < 4)          // Com espaço disponível
+                .Select(kv => kv.Key)
                 .ToList();
 
-            if (setoresDisponiveis.Count == 0)
+            if (setoresValidos.Count == 0)
                 return -1;
 
-            return setoresDisponiveis[random.Next(setoresDisponiveis.Count)];
+            return setoresValidos[random.Next(setoresValidos.Count)];
         }
 
         private void PosicionarPersonagem(int idJogador, string senha, string personagem, int setor)
         {
-            if (!string.IsNullOrWhiteSpace(personagem))
+            if (string.IsNullOrWhiteSpace(personagem))
             {
-                string inicial = personagem.Substring(0, 1);
-
-                string estadoAtual = Jogo.ColocarPersonagem(idJogador, senha, setor, inicial);
-
-                personagensColocados.Add(personagem.Trim());
-                setores[setor].Add(personagem.Trim());
-
-                lblControle.Text += $"Colocando personagem '{personagem}' no setor {setor}." + "\n";
-
-                AtualizarTabuleiro(estadoAtual);
-            }
-            else
-            {
-                // log, erro, ou apenas retorna e evita quebrar o código
                 Console.WriteLine("Personagem inválido sorteado.");
                 return;
             }
+
+            string inicial = personagem.Substring(0, 1);
+            string estadoAtual = Jogo.ColocarPersonagem(idJogador, senha, setor, inicial);
+
+            if (estadoAtual.StartsWith("ERRO:"))
+            {
+                Console.WriteLine($"Erro ao posicionar: {estadoAtual}");
+                return;
+            }
+
+            // Atualiza as estruturas locais
+            personagensColocados.Add(personagem.Trim());
+            if (!setores.ContainsKey(setor))
+            {
+                setores[setor] = new List<string>();
+            }
+            setores[setor].Add(personagem.Trim());
+
+            lblControle.Text += $"Colocando personagem '{personagem}' no setor {setor}.\n";
+            AtualizarTabuleiro(estadoAtual);
         }
-        
+
     }
 }
 
