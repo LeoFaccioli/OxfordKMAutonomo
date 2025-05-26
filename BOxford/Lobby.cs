@@ -467,6 +467,7 @@ namespace BOxford
 
             try
             {
+                SincronizarEstadoTabuleiro();
                 string[] vez = VerificarVez();
                 if (vez == null || vez.Length < 4) // Verifica se tem pelo menos 4 elementos
                 {
@@ -531,45 +532,60 @@ namespace BOxford
             string senha = txtSenha.Text;
             bool promocaoRealizada = false;
 
-            // Verificar setores de 0 a 5 (do menor para o maior)
-            for (int setorAtual = 0; setorAtual <= 5 && !promocaoRealizada; setorAtual++)
+            // Ordem correta de verificação: do setor mais baixo (1) para o mais alto (5)
+            for (int setorAtual = 1; setorAtual <= 5 && !promocaoRealizada; setorAtual++)
             {
-                if (!setores.ContainsKey(setorAtual)) continue;
+                if (!setores.ContainsKey(setorAtual) || setores[setorAtual].Count == 0)
+                    continue;
 
-                // Para cada personagem no setor atual
+                // Verifica cada personagem no setor atual
                 foreach (string personagem in setores[setorAtual].ToList())
                 {
                     int proximoSetor = (setorAtual == 5) ? 10 : setorAtual + 1;
 
-                    // Verificar se o próximo setor existe e tem espaço
-                    if (setores.ContainsKey(proximoSetor))
+                    // Verifica se o próximo setor existe e tem espaço
+                    if (proximoSetor == 10)
                     {
-                        int limite = (proximoSetor == 10) ? 1 : 4;
-                        if (setores[proximoSetor].Count < limite)
-                        {
-                            string resultado = Jogo.Promover(idJogador, senha, personagem);
+                        // Setor 10 (KingsMe!) só permite 1 personagem
+                        if (setores.ContainsKey(10) && setores[10].Count >= 1)
+                            continue;
+                    }
+                    else
+                    {
+                        // Outros setores permitem até 4 personagens
+                        if (setores.ContainsKey(proximoSetor) && setores[proximoSetor].Count >= 4)
+                            continue;
+                    }
 
-                            if (!resultado.StartsWith("ERRO:"))
-                            {
-                                setores[setorAtual].Remove(personagem);
-                                setores[proximoSetor].Add(personagem);
-                                lblControle.Text += $"Promovido: {personagem} ({setorAtual} -> {proximoSetor})\n";
-                                promocaoRealizada = true;
-                                break;
-                            }
-                        }
+                    // Tenta promover no servidor
+                    string resultado = Jogo.Promover(idJogador, senha, personagem);
+
+                    if (!resultado.StartsWith("ERRO:"))
+                    {
+                        // Atualiza estruturas locais somente se a promoção foi bem-sucedida no servidor
+                        setores[setorAtual].Remove(personagem);
+
+                        if (!setores.ContainsKey(proximoSetor))
+                            setores[proximoSetor] = new List<string>();
+
+                        setores[proximoSetor].Add(personagem);
+
+                        lblControle.Text += $"Promovido: {personagem} ({setorAtual} -> {proximoSetor})\n";
+                        promocaoRealizada = true;
+                        break;
+                    }
+                    else
+                    {
+                        lblControle.Text += $"Falha ao promover {personagem}: {resultado}\n";
                     }
                 }
             }
 
             if (!promocaoRealizada)
             {
-                lblControle.Text += "Nenhuma promoção possível.\n";
+                lblControle.Text += "Nenhuma promoção possível no momento.\n";
             }
-
         }
-
-
         private string SortearPersonagemDisponivel()
         {
             // Primeiro obtém a lista atual de personagens do jogo
@@ -665,7 +681,33 @@ namespace BOxford
         }
 
     }
-}
+    private void SincronizarEstadoTabuleiro()
+        {
+            string estadoTabuleiro = EstadoAtualTabuleiro();
+            var personagensPorSetor = new Dictionary<int, List<string>>();
+
+            string[] linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (string linha in linhas)
+            {
+                string[] partes = linha.Split(',');
+                if (partes.Length == 2)
+                {
+                    int setor = int.Parse(partes[0].Trim());
+                    string personagem = partes[1].Trim();
+
+                    if (!personagensPorSetor.ContainsKey(setor))
+                        personagensPorSetor[setor] = new List<string>();
+
+                    personagensPorSetor[setor].Add(personagem);
+                }
+            }
+
+            // Atualiza as estruturas locais
+            setores = personagensPorSetor;
+            personagensColocados = personagensPorSetor.Values.SelectMany(x => x).ToList();
+        }
+    }
 
 
 
