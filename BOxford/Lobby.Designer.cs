@@ -388,14 +388,14 @@
             // 
             // txtPersonagemSelecionado
             // 
-            txtPersonagemSelecionado.Location = new Point(1050, 165);
+            txtPersonagemSelecionado.Location = new Point(887, 230);
             txtPersonagemSelecionado.Name = "txtPersonagemSelecionado";
             txtPersonagemSelecionado.Size = new Size(138, 23);
             txtPersonagemSelecionado.TabIndex = 43;
             // 
             // txtPersonagemSetor
             // 
-            txtPersonagemSetor.Location = new Point(1050, 210);
+            txtPersonagemSetor.Location = new Point(887, 275);
             txtPersonagemSetor.Name = "txtPersonagemSetor";
             txtPersonagemSetor.Size = new Size(138, 23);
             txtPersonagemSetor.TabIndex = 44;
@@ -403,7 +403,7 @@
             // lblPersonagemAPosicionar
             // 
             lblPersonagemAPosicionar.AutoSize = true;
-            lblPersonagemAPosicionar.Location = new Point(1050, 147);
+            lblPersonagemAPosicionar.Location = new Point(887, 212);
             lblPersonagemAPosicionar.Name = "lblPersonagemAPosicionar";
             lblPersonagemAPosicionar.Size = new Size(73, 15);
             lblPersonagemAPosicionar.TabIndex = 45;
@@ -412,7 +412,7 @@
             // lblPersonagemSetor
             // 
             lblPersonagemSetor.AutoSize = true;
-            lblPersonagemSetor.Location = new Point(1050, 192);
+            lblPersonagemSetor.Location = new Point(887, 257);
             lblPersonagemSetor.Name = "lblPersonagemSetor";
             lblPersonagemSetor.Size = new Size(34, 15);
             lblPersonagemSetor.TabIndex = 46;
@@ -420,7 +420,7 @@
             // 
             // btnPosicionarPersonagem
             // 
-            btnPosicionarPersonagem.Location = new Point(1050, 240);
+            btnPosicionarPersonagem.Location = new Point(887, 305);
             btnPosicionarPersonagem.Name = "btnPosicionarPersonagem";
             btnPosicionarPersonagem.Size = new Size(138, 23);
             btnPosicionarPersonagem.TabIndex = 47;
@@ -441,7 +441,7 @@
             // lstPersonagens
             // 
             lstPersonagens.ItemHeight = 15;
-            lstPersonagens.Location = new Point(892, 323);
+            lstPersonagens.Location = new Point(892, 408);
             lstPersonagens.Name = "lstPersonagens";
             lstPersonagens.Size = new Size(138, 229);
             lstPersonagens.TabIndex = 56;
@@ -450,7 +450,7 @@
             // 
             lstSetores.FormattingEnabled = true;
             lstSetores.ItemHeight = 15;
-            lstSetores.Location = new Point(1050, 323);
+            lstSetores.Location = new Point(1050, 408);
             lstSetores.Name = "lstSetores";
             lstSetores.Size = new Size(140, 229);
             lstSetores.TabIndex = 51;
@@ -502,7 +502,7 @@
             // 
             // btnPromoverPersonagem
             // 
-            btnPromoverPersonagem.Location = new Point(1050, 269);
+            btnPromoverPersonagem.Location = new Point(887, 345);
             btnPromoverPersonagem.Name = "btnPromoverPersonagem";
             btnPromoverPersonagem.Size = new Size(138, 23);
             btnPromoverPersonagem.TabIndex = 58;
@@ -522,13 +522,14 @@
             // 
             // tmrVerificaVez
             // 
+            tmrVerificaVez.Enabled = true;
             tmrVerificaVez.Interval = 5000;
             tmrVerificaVez.Tick += tmrVerificaVez_Tick;
             // 
             // lblControle
             // 
             lblControle.AutoSize = true;
-            lblControle.Location = new Point(887, 159);
+            lblControle.Location = new Point(1050, 129);
             lblControle.Name = "lblControle";
             lblControle.Size = new Size(20, 15);
             lblControle.TabIndex = 59;

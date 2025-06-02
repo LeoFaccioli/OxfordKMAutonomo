@@ -405,7 +405,7 @@ namespace BOxford
                 return null;
 
             string[] vez = linhas[0].Split(',');
-            if (vez.Length < 4) 
+            if (vez.Length < 4)
                 return null;
 
             lblIdVez.Text = vez[0];
@@ -460,6 +460,16 @@ namespace BOxford
 
         Random random = new Random();
 
+        private bool VerificarCartaNoSetor10()
+        {
+            if (setores.ContainsKey(10) && setores[10].Count > 0)
+            {
+                string cartaRei = setores[10][0]; // Pega a primeira carta do setor 10
+                lblControle.Text += $"Carta {cartaRei} alcançou o KingsMe! Iniciando votação...\n";
+                return true;
+            }
+            return false;
+        }
 
         private void tmrVerificaVez_Tick(object sender, EventArgs e)
         {
@@ -513,6 +523,13 @@ namespace BOxford
                     {
                         PromoverPersonagens();
                     }
+                    else if (faseAtual == "V") // Fase de votação
+                    {
+                        if (VerificarCartaNoSetor10())
+                        {
+                            VotarAutomaticamente();
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -525,97 +542,145 @@ namespace BOxford
             }
 
         }
+        private void VotarAutomaticamente()
+        {
+            int idJogador = Convert.ToInt32(txtIDjogador.Text);
+            string senha = txtSenha.Text;
+            string cartaRei = setores[10][0];
+
+            // Estratégia 1: Votar sempre Sim (para testes)
+            string voto = "S";
+
+            // Estratégia 2: Votar aleatoriamente
+            // bool voto = random.Next(2) == 0; 
+
+            // Estratégia 3: Votar baseado em regras do jogo
+            // bool voto = DeveAprovarCarta(cartaRei);
+
+            string resultado = Jogo.Votar(idJogador, senha, voto);
+
+            if (!resultado.StartsWith("ERRO:"))
+            {
+                lblControle.Text += $"Voto registrado: para {cartaRei}\n";
+
+                if (resultado.Contains("ELEITA"))
+                {
+                    lblControle.Text += $"{cartaRei} foi eleita Rei!\n";
+                    // Lógica adicional pós-eleição
+                }
+            }
+            else
+            {
+                lblControle.Text += $"Erro ao votar: {resultado}\n";
+            }
+        }
 
         private void PromoverPersonagens()
         {
             int idJogador = Convert.ToInt32(txtIDjogador.Text);
             string senha = txtSenha.Text;
-            bool promocaoRealizada = false;
 
-            // Ordem correta de verificação: do setor mais baixo (1) para o mais alto (5)
-            for (int setorAtual = 1; setorAtual <= 5 && !promocaoRealizada; setorAtual++)
+            // Lista todos os personagens que podem ser promovidos
+            var candidatosPromocao = new List<(int setor, string personagem)>();
+
+            for (int setorAtual = 1; setorAtual <= 5; setorAtual++)
             {
                 if (!setores.ContainsKey(setorAtual) || setores[setorAtual].Count == 0)
                     continue;
 
-                // Verifica cada personagem no setor atual
-                foreach (string personagem in setores[setorAtual].ToList())
+                int proximoSetor = (setorAtual == 5) ? 10 : setorAtual + 1;
+
+                // Verifica se o próximo setor tem espaço
+                bool podePromover = (proximoSetor == 10) ?
+                    (!setores.ContainsKey(10) || setores[10].Count < 1) :
+                    (!setores.ContainsKey(proximoSetor) || setores[proximoSetor].Count < 4);
+
+                if (podePromover)
                 {
-                    int proximoSetor = (setorAtual == 5) ? 10 : setorAtual + 1;
-
-                    // Verifica se o próximo setor existe e tem espaço
-                    if (proximoSetor == 10)
-                    {
-                        // Setor 10 (KingsMe!) só permite 1 personagem
-                        if (setores.ContainsKey(10) && setores[10].Count >= 1)
-                            continue;
-                    }
-                    else
-                    {
-                        // Outros setores permitem até 4 personagens
-                        if (setores.ContainsKey(proximoSetor) && setores[proximoSetor].Count >= 4)
-                            continue;
-                    }
-
-                    // Tenta promover no servidor
-                    string resultado = Jogo.Promover(idJogador, senha, personagem);
-
-                    if (!resultado.StartsWith("ERRO:"))
-                    {
-                        // Atualiza estruturas locais somente se a promoção foi bem-sucedida no servidor
-                        setores[setorAtual].Remove(personagem);
-
-                        if (!setores.ContainsKey(proximoSetor))
-                            setores[proximoSetor] = new List<string>();
-
-                        setores[proximoSetor].Add(personagem);
-
-                        lblControle.Text += $"Promovido: {personagem} ({setorAtual} -> {proximoSetor})\n";
-                        promocaoRealizada = true;
-                        break;
-                    }
-                    else
-                    {
-                        lblControle.Text += $"Falha ao promover {personagem}: {resultado}\n";
-                    }
+                    // Adiciona todos os personagens deste setor como candidatos
+                    candidatosPromocao.AddRange(
+                        setores[setorAtual].Select(p => (setorAtual, p))
+                    );
                 }
             }
 
-            if (!promocaoRealizada)
+            if (candidatosPromocao.Count == 0)
             {
                 lblControle.Text += "Nenhuma promoção possível no momento.\n";
+                return;
+            }
+
+            // Seleciona aleatoriamente um candidato
+            var (setorOrigem, personagem) = candidatosPromocao[random.Next(candidatosPromocao.Count)];
+            int setorDestino = (setorOrigem == 5) ? 10 : setorOrigem + 1;
+
+            string resultado = Jogo.Promover(idJogador, senha, personagem);
+
+            if (!resultado.StartsWith("ERRO:"))
+            {
+                setores[setorOrigem].Remove(personagem);
+
+                if (!setores.ContainsKey(setorDestino))
+                    setores[setorDestino] = new List<string>();
+
+                setores[setorDestino].Add(personagem);
+
+                lblControle.Text += $"Promovido aleatoriamente: {personagem} ({setorOrigem}->{setorDestino})\n";
+            }
+            else
+            {
+                lblControle.Text += $"Falha ao promover {personagem}: {resultado}\n";
             }
         }
         private string SortearPersonagemDisponivel()
         {
-            // Primeiro obtém a lista atual de personagens do jogo
-            string retorno = Jogo.ListarPersonagens();
-            if (retorno.StartsWith("ERRO:"))
+            try
             {
-                Console.WriteLine($"Erro ao listar personagens: {retorno}");
+                string retorno = Jogo.ListarPersonagens();
+                if (retorno.StartsWith("ERRO:"))
+                {
+                    Console.WriteLine($"Erro ao listar personagens: {retorno}");
+                    return null;
+                }
+
+                retorno = retorno.Replace("\r", "").Trim();
+                string[] todos = retorno.Split('\n');
+
+                // Obter personagens já no tabuleiro diretamente do estado atual
+                var estadoTabuleiro = EstadoAtualTabuleiro();
+                var personagensNoTabuleiro = ObterPersonagensNoTabuleiro(estadoTabuleiro);
+
+                // Debug: Mostrar personagens disponíveis
+                Console.WriteLine("Todos os personagens: " + string.Join(",", todos));
+                Console.WriteLine("Personagens no tabuleiro: " + string.Join(",", personagensNoTabuleiro));
+
+                List<string> disponiveis = todos
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .Select(p => p.Trim())
+                    .Where(p => !personagensNoTabuleiro.Contains(p))
+                    .ToList();
+
+                // Debug: Mostrar personagens disponíveis após filtro
+                Console.WriteLine("Personagens disponíveis: " + string.Join(",", disponiveis));
+
+                if (disponiveis.Count == 0)
+                {
+                    Console.WriteLine("Nenhum personagem disponível para posicionar.");
+                    return null;
+                }
+
+                // Seleção verdadeiramente aleatória
+                int index = random.Next(disponiveis.Count);
+                string selecionado = disponiveis[index];
+                Console.WriteLine($"Personagem selecionado aleatoriamente: {selecionado}");
+
+                return selecionado;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em SortearPersonagemDisponivel: {ex.Message}");
                 return null;
             }
-
-            retorno = retorno.Replace("\r", "");
-            string[] todos = retorno.Split('\n');
-
-            // Obtém o estado atual do tabuleiro para verificar personagens já posicionados
-            string estadoTabuleiro = EstadoAtualTabuleiro();
-            var personagensNoTabuleiro = ObterPersonagensNoTabuleiro(estadoTabuleiro);
-
-            // Filtra personagens disponíveis
-            List<string> disponiveis = todos
-                .Where(p => !string.IsNullOrWhiteSpace(p))
-                .Where(p => !personagensNoTabuleiro.Contains(p.Trim()))
-                .ToList();
-
-            if (disponiveis.Count == 0)
-            {
-                Console.WriteLine("Todos os personagens já foram posicionados.");
-                return null;
-            }
-
-            return disponiveis[random.Next(disponiveis.Count)];
         }
 
         // Método auxiliar para extrair personagens do tabuleiro
@@ -680,35 +745,34 @@ namespace BOxford
             AtualizarTabuleiro(estadoAtual);
         }
 
-    }
     private void SincronizarEstadoTabuleiro()
+    {
+        try
         {
             string estadoTabuleiro = EstadoAtualTabuleiro();
-            var personagensPorSetor = new Dictionary<int, List<string>>();
-
-            string[] linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+            var novoEstado = new Dictionary<int, List<string>>();
+            var linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (string linha in linhas)
             {
-                string[] partes = linha.Split(',');
-                if (partes.Length == 2)
+                var partes = linha.Split(',');
+                if (partes.Length == 2 && int.TryParse(partes[0].Trim(), out int setor))
                 {
-                    int setor = int.Parse(partes[0].Trim());
-                    string personagem = partes[1].Trim();
-
-                    if (!personagensPorSetor.ContainsKey(setor))
-                        personagensPorSetor[setor] = new List<string>();
-
-                    personagensPorSetor[setor].Add(personagem);
+                    if (!novoEstado.ContainsKey(setor))
+                    novoEstado[setor] = new List<string>();
+                    novoEstado[setor].Add(partes[1].Trim());
+                    }
                 }
+                setores = novoEstado;
+                personagensColocados = novoEstado.Values.SelectMany(x => x).Distinct().ToList();
             }
-
-            // Atualiza as estruturas locais
-            setores = personagensPorSetor;
-            personagensColocados = personagensPorSetor.Values.SelectMany(x => x).ToList();
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao sincronizar tabuleiro: {ex.Message}");
+            }
         }
     }
-
+}
 
 
 
