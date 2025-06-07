@@ -179,9 +179,6 @@ namespace BOxford
             {
                 lblerro.Text = "";
             }
-            tmrVerificaVez.Enabled = true;
-            MessageBox.Show("Timer Iniciado");
-
         }
 
         //Exibir cartas
@@ -391,44 +388,30 @@ namespace BOxford
             AtualizarTabuleiro(estadoTabuleiro);
         }
 
-        private string[] VerificarVez()
+        private (string[] dadosVez, bool partidaIniciada) VerificarVezCompleto()
         {
-            string partida = txtIDpartida.Text;
-            int partidaId = Convert.ToInt32(partida);
-
-            string retorno = Jogo.VerificarVez(partidaId).Trim();
-            if (string.IsNullOrEmpty(retorno))
-                return null;
-
-            string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
-            if (linhas.Length == 0)
-                return null;
-
-            string[] vez = linhas[0].Split(',');
-            if (vez.Length < 4)
-                return null;
-
-            lblIdVez.Text = vez[0];
-            string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
-
-            // Atualizar nome do jogador da vez
-            string retorno2 = Jogo.ListarJogadores(partidaId).Trim();
-            string[] jogadores = retorno2.Split('\n');
-
-            foreach (string jogador in jogadores)
+            try
             {
-                string[] dadosJogador = jogador.Split(',');
-                if (dadosJogador.Length >= 2 && dadosJogador[0].Trim() == vez[0].Trim())
-                {
-                    lblNomeVez.Text = dadosJogador[1].Trim();
-                    break;
-                }
+                string partida = txtIDpartida.Text;
+                if (string.IsNullOrEmpty(partida)) return (null, false);
+
+                int partidaId = Convert.ToInt32(partida);
+                string retorno = Jogo.VerificarVez(partidaId).Trim();
+
+                if (string.IsNullOrEmpty(retorno)) return (null, false);
+
+                string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+                if (linhas.Length == 0) return (null, false);
+
+                string[] vez = linhas[0].Split(',');
+
+                bool iniciada = vez.Length > 4 && vez[1].Trim().Equals("J");
+                return (vez, iniciada);
             }
-
-            AtualizarTabuleiro(estadoTabuleiro);
-            return vez;
-
-
+            catch
+            {
+                return (null, false);
+            }
         }
         private string EstadoAtualTabuleiro()
         {
@@ -470,64 +453,63 @@ namespace BOxford
             }
             return false;
         }
+        private bool PartidaFoiIniciada()
+        {
+            try
+            {
+                string retorno = Jogo.VerificarVez(Convert.ToInt32(txtIDpartida.Text));
+                if (retorno.Contains(",J,")) // Verifica se contém ",J," (Jogando)
+                    return true;
 
+                return false;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         private void tmrVerificaVez_Tick(object sender, EventArgs e)
         {
             tmrVerificaVez.Enabled = false;
-
             try
             {
-                SincronizarEstadoTabuleiro();
-                string[] vez = VerificarVez();
-                if (vez == null || vez.Length < 4) // Verifica se tem pelo menos 4 elementos
+                Console.WriteLine("--- Início do Tick ---");
+
+                if (!JogadorConectado())
                 {
-                    tmrVerificaVez.Enabled = true;
+                    Console.WriteLine("Jogador não conectado");
                     return;
                 }
 
-                string idJogadorVez = vez[0];
-                string faseAtual = vez[3].ToUpper();
+                var (dadosVez, partidaIniciada) = VerificarVezCompleto();
 
-                if (idJogadorVez == lblIdJogador.Text)
+                if (!partidaIniciada)
                 {
-                    if (faseAtual == "S")
-                    {
-                        string personagem = SortearPersonagemDisponivel();
-                        if (personagem == null)
-                        {
-                            Console.WriteLine("Nenhum personagem disponível para posicionar.");
-                            tmrVerificaVez.Enabled = true;
-                            return;
-                        }
-                        int setor = SortearSetorDisponivel();
-                        if (setor == -1)
-                        {
-                            Console.WriteLine("Todos os setores válidos estão cheios.");
-                            tmrVerificaVez.Enabled = true;
-                            return;
-                        }
+                    lblStatus.Text = "Aguardando início da partida...";
+                    return;
+                }
 
-                        // Resetar listas se acabou de entrar na fase de setup
-                        if (setores.Values.All(list => list.Count == 0))
-                        {
-                            personagensColocados.Clear();
-                            foreach (var key in setores.Keys)
-                            {
-                                setores[key].Clear();
-                            }
-                        }
-                        PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text,
-                                   personagem, setor);
-                    }
-                    else if (faseAtual == "P")
+                lblStatus.Text = "Partida em andamento!";
+                SincronizarEstadoTabuleiro();
+
+                if (dadosVez != null && dadosVez.Length >= 4)
+                {
+                    string idJogadorVez = dadosVez[0];
+                    string faseAtual = dadosVez[3].ToUpper();
+
+                    if (idJogadorVez == lblIdJogador.Text)
                     {
-                        PromoverPersonagens();
-                    }
-                    else if (faseAtual == "V") // Fase de votação
-                    {
-                        if (VerificarCartaNoSetor10())
+                        switch (faseAtual)
                         {
-                            VotarAutomaticamente();
+                            case "S":
+                                ProcessarSetup();
+                                break;
+                            case "P":
+                                ProcessarPromocao();
+                                break;
+                            case "V":
+                                ProcessarVotacao();
+                                break;
                         }
                     }
                 }
@@ -540,7 +522,35 @@ namespace BOxford
             {
                 tmrVerificaVez.Enabled = true;
             }
+        }
+        private void ProcessarSetup()
+        {
+            string personagem = SortearPersonagemDisponivel();
+            if (personagem == null) return;
 
+            int setor = SortearSetorDisponivel();
+            if (setor == -1) return;
+
+            PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, personagem, setor);
+        }
+
+        private void ProcessarPromocao()
+        {
+            PromoverPersonagens();
+        }
+
+        private void ProcessarVotacao()
+        {
+            if (VerificarCartaNoSetor10())
+            {
+                VotarAutomaticamente();
+            }
+        }
+        private bool JogadorConectado()
+        {
+            return !string.IsNullOrEmpty(txtIDjogador.Text) &&
+                   !string.IsNullOrEmpty(txtSenha.Text) &&
+                   !string.IsNullOrEmpty(txtIDpartida.Text);
         }
         private void VotarAutomaticamente()
         {
@@ -745,22 +755,22 @@ namespace BOxford
             AtualizarTabuleiro(estadoAtual);
         }
 
-    private void SincronizarEstadoTabuleiro()
-    {
-        try
+        private void SincronizarEstadoTabuleiro()
         {
-            string estadoTabuleiro = EstadoAtualTabuleiro();
-            var novoEstado = new Dictionary<int, List<string>>();
-            var linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
-
-            foreach (string linha in linhas)
+            try
             {
-                var partes = linha.Split(',');
-                if (partes.Length == 2 && int.TryParse(partes[0].Trim(), out int setor))
+                string estadoTabuleiro = EstadoAtualTabuleiro();
+                var novoEstado = new Dictionary<int, List<string>>();
+                var linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (string linha in linhas)
                 {
-                    if (!novoEstado.ContainsKey(setor))
-                    novoEstado[setor] = new List<string>();
-                    novoEstado[setor].Add(partes[1].Trim());
+                    var partes = linha.Split(',');
+                    if (partes.Length == 2 && int.TryParse(partes[0].Trim(), out int setor))
+                    {
+                        if (!novoEstado.ContainsKey(setor))
+                            novoEstado[setor] = new List<string>();
+                        novoEstado[setor].Add(partes[1].Trim());
                     }
                 }
                 setores = novoEstado;
@@ -770,6 +780,11 @@ namespace BOxford
             {
                 Console.WriteLine($"Erro ao sincronizar tabuleiro: {ex.Message}");
             }
+        }
+
+        private void Lobby_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }

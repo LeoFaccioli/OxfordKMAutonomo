@@ -80,6 +80,7 @@
             lblerro = new Label();
             tmrVerificaVez = new System.Windows.Forms.Timer(components);
             lblControle = new Label();
+            lblStatus = new Label();
             groupBox1.SuspendLayout();
             SuspendLayout();
             // 
@@ -535,11 +536,20 @@
             lblControle.TabIndex = 59;
             lblControle.Text = "Pe";
             // 
+            // lblStatus
+            // 
+            lblStatus.AutoSize = true;
+            lblStatus.Location = new Point(476, 15);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new Size(0, 15);
+            lblStatus.TabIndex = 60;
+            // 
             // Lobby
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1264, 681);
+            Controls.Add(lblStatus);
             Controls.Add(lblControle);
             Controls.Add(btnPromoverPersonagem);
             Controls.Add(lblTabuleiro);
@@ -589,6 +599,7 @@
             Name = "Lobby";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "King Me - Lobby";
+            Load += Lobby_Load;
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
             ResumeLayout(false);
@@ -647,5 +658,6 @@
         private Label lblerro;
         private System.Windows.Forms.Timer tmrVerificaVez;
         private Label lblControle;
+        private Label lblStatus;
     }
 }
