@@ -15,6 +15,7 @@ namespace BOxford
 
         //Atribuindo a letra para uma imagem
         private Dictionary<string, Image> imagensCartas = new Dictionary<string, Image>();
+        private int rodadaAtual = 1;
         private void CarregarImagensCartas()
         {
             imagensCartas["A"] = Properties.Resources.CartaA;
@@ -405,7 +406,7 @@ namespace BOxford
 
                 string[] vez = linhas[0].Split(',');
 
-                bool iniciada = vez.Length > 4 && vez[1].Trim().Equals("J");
+                bool iniciada = vez.Length > 1 && vez[1].Trim().Equals("J");
                 return (vez, iniciada);
             }
             catch
@@ -445,23 +446,28 @@ namespace BOxford
 
         private bool VerificarCartaNoSetor10()
         {
-            if (setores.ContainsKey(10) && setores[10].Count > 0)
+            bool cartaNoSetor10 = setores.ContainsKey(10) && setores[10].Count > 0;
+
+            if (cartaNoSetor10)
             {
-                string cartaRei = setores[10][0]; // Pega a primeira carta do setor 10
+                string cartaRei = setores[10][0];
                 lblControle.Text += $"Carta {cartaRei} alcançou o KingsMe! Iniciando votação...\n";
-                return true;
+                Console.WriteLine($"Carta no setor 10: {cartaRei}");
             }
-            return false;
+
+            return cartaNoSetor10;
         }
         private bool PartidaFoiIniciada()
         {
             try
             {
                 string retorno = Jogo.VerificarVez(Convert.ToInt32(txtIDpartida.Text));
-                if (retorno.Contains(",J,")) // Verifica se contém ",J," (Jogando)
-                    return true;
+                if (string.IsNullOrEmpty(retorno)) return false;
 
-                return false;
+                // Verifica múltiplos indicadores de partida iniciada
+                return retorno.Contains(",J,") ||  // Formato do servidor
+                       retorno.Contains("Jogando") ||
+                       !retorno.Contains("Aguardando");
             }
             catch
             {
@@ -473,11 +479,11 @@ namespace BOxford
             tmrVerificaVez.Enabled = false;
             try
             {
-                Console.WriteLine("--- Início do Tick ---");
+                Console.WriteLine("\n--- Verificação de turno iniciada ---");
 
                 if (!JogadorConectado())
                 {
-                    Console.WriteLine("Jogador não conectado");
+                    Console.WriteLine("Jogador não conectado - saindo");
                     return;
                 }
 
@@ -485,65 +491,263 @@ namespace BOxford
 
                 if (!partidaIniciada)
                 {
-                    lblStatus.Text = "Aguardando início da partida...";
+                    Console.WriteLine("Partida não iniciada - saindo");
                     return;
                 }
 
-                lblStatus.Text = "Partida em andamento!";
-                SincronizarEstadoTabuleiro();
-
                 if (dadosVez != null && dadosVez.Length >= 4)
                 {
-                    string idJogadorVez = dadosVez[0];
-                    string faseAtual = dadosVez[3].ToUpper();
+                    char faseAtual = dadosVez[3][0];
+                    Console.WriteLine($"Fase detectada: {faseAtual}");
 
-                    if (idJogadorVez == lblIdJogador.Text)
+                    switch (faseAtual)
                     {
-                        switch (faseAtual)
-                        {
-                            case "S":
-                                ProcessarSetup();
-                                break;
-                            case "P":
-                                ProcessarPromocao();
-                                break;
-                            case "V":
-                                ProcessarVotacao();
-                                break;
-                        }
+                        case 'S':
+                            if (setores.Any(s => s.Value.Count > 0))
+                            {
+                                ReiniciarRodada();
+                            }
+                            ProcessarSetup();
+                            break;
+
+                        case 'P':
+                            ProcessarPromocao();
+                            break;
+
+                        case 'V':
+                            ProcessarVotacao();
+                            break;
+
+                        default:
+                            Console.WriteLine($"Fase desconhecida: {faseAtual}");
+                            break;
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Erro no timer: {ex.Message}");
+                Console.WriteLine($"ERRO no timer: {ex.Message}");
             }
             finally
             {
                 tmrVerificaVez.Enabled = true;
+                Console.WriteLine("--- Verificação de turno concluída ---");
             }
+        }
+        private void ReiniciarRodada()
+        {
+            try
+            {
+                // 1. Limpa todas as cartas visuais
+                var cartas = Controls.OfType<PictureBox>().Where(p => p.Tag != null).ToList();
+                foreach (var carta in cartas)
+                {
+                    Controls.Remove(carta);
+                    carta.Dispose();
+                }
+
+                // 2. Reinicia as estruturas de dados
+                personagensColocados.Clear();
+                setores = new Dictionary<int, List<string>>()
+        {
+            {1, new List<string>()},
+            {2, new List<string>()},
+            {3, new List<string>()},
+            {4, new List<string>()},
+            {5, new List<string>()},
+            {10, new List<string>()}
+        };
+
+                // 3. Atualiza o contador de rodadas
+                rodadaAtual++;
+                lblControle.Text = $"Rodada: {rodadaAtual}";
+
+                // 4. Força uma sincronização completa com o servidor
+                SincronizarEstadoTabuleiro(forcarAtualizacao: true);
+
+                lblControle.Text += "=== NOVA RODADA INICIADA ===\n";
+                Console.WriteLine("Rodada reiniciada com sucesso");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao reiniciar rodada: {ex.Message}");
+            }
+        }
+        private void SincronizarEstadoTabuleiro(bool forcarAtualizacao = false)
+        {
+            try
+            {
+                string estadoTabuleiro = EstadoAtualTabuleiro();
+                var novoEstado = new Dictionary<int, List<string>>();
+                var linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+                // Processa o estado atual do tabuleiro
+                foreach (string linha in linhas)
+                {
+                    var partes = linha.Split(',');
+                    if (partes.Length == 2 && int.TryParse(partes[0].Trim(), out int setor))
+                    {
+                        if (!novoEstado.ContainsKey(setor))
+                            novoEstado[setor] = new List<string>();
+                        novoEstado[setor].Add(partes[1].Trim());
+                    }
+                }
+
+                // Atualiza apenas se houve mudanças significativas
+                if (forcarAtualizacao || !EstadosSaoIguais(novoEstado, setores))
+                {
+                    setores = novoEstado;
+                    personagensColocados = novoEstado.Values.SelectMany(x => x).Distinct().ToList();
+                    AtualizarTabuleiroVisual();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao sincronizar tabuleiro: {ex.Message}");
+            }
+        }
+
+        private bool EstadosSaoIguais(Dictionary<int, List<string>> estado1, Dictionary<int, List<string>> estado2)
+        {
+            // Comparação simplificada sem usar DictionaryEqual
+            if (estado1.Keys.Count != estado2.Keys.Count) return false;
+
+            foreach (var kvp in estado1)
+            {
+                if (!estado2.ContainsKey(kvp.Key)) return false;
+                if (!estado2[kvp.Key].SequenceEqual(kvp.Value)) return false;
+            }
+
+            return true;
+        }
+        private void ProcessarNovaRodada()
+        {
+            // 1. Limpar estado visual
+            Controls.OfType<PictureBox>().ToList().ForEach(p => Controls.Remove(p));
+
+            // 2. Reiniciar estruturas de dados
+            personagensColocados.Clear();
+            setores = new Dictionary<int, List<string>>()
+    {
+        {1, new List<string>()},
+        {2, new List<string>()},
+        {3, new List<string>()},
+        {4, new List<string>()},
+        {5, new List<string>()},
+        {10, new List<string>()}
+    };
+
+            // 3. Sincronizar com servidor
+            SincronizarEstadoTabuleiro();
+
+            // 4. Processar primeiro movimento
+            ProcessarSetup();
         }
         private void ProcessarSetup()
         {
-            string personagem = SortearPersonagemDisponivel();
-            if (personagem == null) return;
+            try
+            {
+                // Verifica se é o jogador atual que deve agir
+                if (lblIdJogador.Text != lblIdVez.Text) return;
 
-            int setor = SortearSetorDisponivel();
-            if (setor == -1) return;
+                string personagem = SortearPersonagemDisponivel();
+                if (personagem == null)
+                {
+                    Console.WriteLine("Nenhum personagem disponível para setup");
+                    return;
+                }
 
-            PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, personagem, setor);
+                int setor = SortearSetorDisponivel();
+                if (setor == -1)
+                {
+                    Console.WriteLine("Nenhum setor disponível para setup");
+                    return;
+                }
+
+                PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, personagem, setor);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro no ProcessarSetup: {ex.Message}");
+            }
+        }
+        private void AtualizarTabuleiroVisual()
+        {
+            if (InvokeRequired)
+            {
+                Invoke(new Action(AtualizarTabuleiroVisual));
+                return;
+            }
+
+            // Remove apenas as PictureBox de cartas
+            var cartas = Controls.OfType<PictureBox>().Where(p => p.Tag != null).ToList();
+            foreach (var carta in cartas)
+            {
+                Controls.Remove(carta);
+                carta.Dispose();
+            }
+
+            // Recria todas as cartas baseadas no estado atual
+            foreach (var setor in setores)
+            {
+                foreach (var carta in setor.Value)
+                {
+                    PosicionarCarta(setor.Key, carta);
+                }
+            }
         }
 
+        private bool JogadorDaVez()
+        {
+            return lblIdJogador.Text == lblIdVez.Text;
+        }
         private void ProcessarPromocao()
         {
             PromoverPersonagens();
         }
-
+        private bool votacaoEmAndamento = false;
+        private string ultimaCartaRei = "";
+        private bool votacaoConcluida = false;
         private void ProcessarVotacao()
         {
-            if (VerificarCartaNoSetor10())
+            try
             {
-                VotarAutomaticamente();
+                Console.WriteLine("=== VERIFICANDO VOTAÇÃO ===");
+
+                // Verifica se há carta no setor 10
+                if (setores.ContainsKey(10) && setores[10].Count > 0)
+                {
+                    string cartaAtual = setores[10][0];
+
+                    // Se é uma nova carta ou primeira votação
+                    if (!votacaoEmAndamento || cartaAtual != ultimaCartaRei)
+                    {
+                        Console.WriteLine($"Nova carta no setor 10: {cartaAtual}");
+                        ultimaCartaRei = cartaAtual;
+                        votacaoEmAndamento = true;
+
+                        // Verifica se é a vez do jogador
+                        if (JogadorDaVez())
+                        {
+                            Console.WriteLine("É a vez do jogador - votando...");
+                            VotarAutomaticamente();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Não é a vez do jogador - aguardando...");
+                        }
+                    }
+                }
+                else
+                {
+                    votacaoEmAndamento = false;
+                    ultimaCartaRei = "";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERRO em ProcessarVotacao: {ex.Message}");
+                votacaoEmAndamento = false;
             }
         }
         private bool JogadorConectado()
@@ -552,39 +756,65 @@ namespace BOxford
                    !string.IsNullOrEmpty(txtSenha.Text) &&
                    !string.IsNullOrEmpty(txtIDpartida.Text);
         }
+        private string EscolherVoto(string cartaRei)
+        {
+            // Implemente sua estratégia de voto aqui
+            // Exemplo 1: Sempre votar Sim
+            return "S";
+
+            // Exemplo 2: Voto aleatório
+            // return random.Next(2) == 0 ? "S" : "N";
+
+            // Exemplo 3: Estratégia baseada em regras
+            // if (cartaRei == "A") return "S";
+            // else return "N";
+        }
         private void VotarAutomaticamente()
         {
-            int idJogador = Convert.ToInt32(txtIDjogador.Text);
-            string senha = txtSenha.Text;
-            string cartaRei = setores[10][0];
-
-            // Estratégia 1: Votar sempre Sim (para testes)
-            string voto = "S";
-
-            // Estratégia 2: Votar aleatoriamente
-            // bool voto = random.Next(2) == 0; 
-
-            // Estratégia 3: Votar baseado em regras do jogo
-            // bool voto = DeveAprovarCarta(cartaRei);
-
-            string resultado = Jogo.Votar(idJogador, senha, voto);
-
-            if (!resultado.StartsWith("ERRO:"))
+            try
             {
-                lblControle.Text += $"Voto registrado: para {cartaRei}\n";
-
-                if (resultado.Contains("ELEITA"))
+                if (!setores.ContainsKey(10) || setores[10].Count == 0)
                 {
-                    lblControle.Text += $"{cartaRei} foi eleita Rei!\n";
-                    // Lógica adicional pós-eleição
+                    Console.WriteLine("AVISO: Nenhuma carta no setor 10 para votar");
+                    return;
+                }
+
+                string cartaRei = setores[10][0];
+                Console.WriteLine($"Preparando voto para: {cartaRei}");
+
+                // Escolhe o voto (S ou N)
+                string voto = EscolherVoto(cartaRei); // Você pode implementar sua estratégia aqui
+
+                Console.WriteLine($"Enviando voto: {voto}");
+
+                string resultado = Jogo.Votar(
+                    Convert.ToInt32(txtIDjogador.Text),
+                    txtSenha.Text,
+                    voto
+                );
+
+                Console.WriteLine($"Resposta do servidor: {resultado}");
+
+                if (!resultado.StartsWith("ERRO:"))
+                {
+                    lblControle.Text += $"Voto {voto} registrado para {cartaRei}\n";
+
+                    if (resultado.Contains("ELEITA"))
+                    {
+                        lblControle.Text += $"{cartaRei} foi eleita Rei!\n";
+                        votacaoEmAndamento = false; // Reseta para próxima votação
+                    }
+                }
+                else
+                {
+                    lblControle.Text += $"ERRO ao votar: {resultado}\n";
                 }
             }
-            else
+            catch (Exception ex)
             {
-                lblControle.Text += $"Erro ao votar: {resultado}\n";
+                Console.WriteLine($"ERRO em VotarAutomaticamente: {ex.Message}");
             }
         }
-
         private void PromoverPersonagens()
         {
             int idJogador = Convert.ToInt32(txtIDjogador.Text);
@@ -641,6 +871,17 @@ namespace BOxford
             {
                 lblControle.Text += $"Falha ao promover {personagem}: {resultado}\n";
             }
+            string partida = txtIDpartida.Text;
+            int partidaId = Convert.ToInt32(partida);
+
+            // Obtém o ID do jogador que tem a vez
+            string retorno = Jogo.VerificarVez(partidaId).Trim();
+            string[] vez = retorno.Split(',');
+            string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+
+            string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
+
+            AtualizarTabuleiro(estadoTabuleiro);
         }
         private string SortearPersonagemDisponivel()
         {
