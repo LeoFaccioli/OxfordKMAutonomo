@@ -388,7 +388,6 @@ namespace BOxford
 
             AtualizarTabuleiro(estadoTabuleiro);
         }
-
         private (string[] dadosVez, bool partidaIniciada) VerificarVezCompleto()
         {
             try
@@ -405,6 +404,12 @@ namespace BOxford
                 if (linhas.Length == 0) return (null, false);
 
                 string[] vez = linhas[0].Split(',');
+
+                // Atualiza minhas cartas sempre que verifica a vez
+                if (JogadorDaVez())
+                {
+                    AtualizarMinhasCartas();
+                }
 
                 bool iniciada = vez.Length > 1 && vez[1].Trim().Equals("J");
                 return (vez, iniciada);
@@ -443,19 +448,52 @@ namespace BOxford
         };
 
         Random random = new Random();
+        private static readonly Dictionary<string, int> rankingPersonagens = new Dictionary<string, int>
+        {
+            {"A", 7},  // Adilson - mais valioso
+            {"B", 6},  // Beatriz
+            {"C", 5},  // Claro
+            {"D", 4},  // Douglas
+            {"E", 3},  // Eduardo
+            {"G", 2},  // Guilherme
+            {"H", 1},  // Heredia - menos valioso
+            {"K", 5},  // Kelly
+            {"L", 4},  // Leonardo
+            {"M", 3},  // Mario
+            {"Q", 2},  // Quintas
+            {"R", 1},  // Ranulfo
+            {"T", 6}   // Toshio
+        };
+
+        private List<string> minhasCartas = new List<string>();
+        private List<string> personagensEmJogo = new List<string>();
 
         private bool VerificarCartaNoSetor10()
         {
-            bool cartaNoSetor10 = setores.ContainsKey(10) && setores[10].Count > 0;
-
-            if (cartaNoSetor10)
+            try
             {
-                string cartaRei = setores[10][0];
-                lblControle.Text += $"Carta {cartaRei} alcançou o KingsMe! Iniciando votação...\n";
-                Console.WriteLine($"Carta no setor 10: {cartaRei}");
-            }
+                // Primeiro sincroniza com o estado real do servidor
+                string estadoTabuleiro = EstadoAtualTabuleiro();
+                var linhas = estadoTabuleiro.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
 
-            return cartaNoSetor10;
+                foreach (string linha in linhas)
+                {
+                    var partes = linha.Split(',');
+                    if (partes.Length == 2 && int.TryParse(partes[0].Trim(), out int setor) && setor == 10)
+                    {
+                        string carta = partes[1].Trim();
+                        lblControle.Text += $"REI DETECTADO: {carta} no setor 10\n";
+                        Console.WriteLine($"Carta {carta} chegou ao KingsMe");
+                        return true;
+                    }
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro ao verificar setor 10: {ex.Message}");
+                return false;
+            }
         }
         private bool PartidaFoiIniciada()
         {
@@ -474,79 +512,144 @@ namespace BOxford
                 return false;
             }
         }
+        private void AtualizarMinhasCartas()
+        {
+            try
+            {
+                string retorno = Jogo.ListarCartas(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text);
+
+                if (retorno.StartsWith("ERRO:"))
+                {
+                    Console.WriteLine($"Erro ao listar cartas: {retorno}");
+                    return;
+                }
+
+                minhasCartas.Clear();
+                foreach (char c in retorno.Trim())
+                {
+                    minhasCartas.Add(c.ToString());
+                }
+
+                // Ordena as cartas pelo ranking (as melhores primeiro)
+                minhasCartas = minhasCartas.OrderByDescending(c => rankingPersonagens.GetValueOrDefault(c, 0)).ToList();
+
+                Console.WriteLine($"Minhas cartas atualizadas: {string.Join(",", minhasCartas)}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em AtualizarMinhasCartas: {ex.Message}");
+            }
+        }
+        private bool reiEleito = false;
         private void tmrVerificaVez_Tick(object sender, EventArgs e)
         {
             tmrVerificaVez.Enabled = false;
             try
             {
-                Console.WriteLine("\n--- Verificação de turno iniciada ---");
+                if (!JogadorConectado()) return;
 
-                if (!JogadorConectado())
-                {
-                    Console.WriteLine("Jogador não conectado - saindo");
-                    return;
-                }
-
+                // Atualiza primeiro o estado do jogo
                 var (dadosVez, partidaIniciada) = VerificarVezCompleto();
 
+                // Atualiza o tabuleiro visual
+                SincronizarEstadoTabuleiro();
+
+                // Verifica se a partida está em andamento
                 if (!partidaIniciada)
                 {
-                    Console.WriteLine("Partida não iniciada - saindo");
+                    tmrVerificaVez.Enabled = true;
                     return;
                 }
 
                 if (dadosVez != null && dadosVez.Length >= 4)
                 {
                     char faseAtual = dadosVez[3][0];
-                    Console.WriteLine($"Fase detectada: {faseAtual}");
+                    string idJogadorVez = dadosVez[0];
 
+                    // Atualiza quem tem a vez
+                    lblIdVez.Text = idJogadorVez;
+
+                    // Verifica se houve reinício (setor 10 vazio após coroação)
+                    if (reiEleito && (!setores.ContainsKey(10) || setores[10].Count == 0))
+                    {
+                        reiEleito = false;
+                        votacaoConcluida = false;
+                        ReiniciarRodada();
+                        tmrVerificaVez.Enabled = true;
+                        return;
+                    }
+
+                    // Processa cada fase do jogo de acordo com a estratégia
                     switch (faseAtual)
                     {
-                        case 'S':
-                            if (setores.Any(s => s.Value.Count > 0))
+                        case 'S': // Setup
+                            if (JogadorDaVez())
                             {
-                                ReiniciarRodada();
+                                AtualizarMinhasCartas();
+                                ProcessarSetup();
                             }
-                            ProcessarSetup();
                             break;
 
-                        case 'P':
-                            ProcessarPromocao();
+                        case 'P': // Promoção
+                            if (JogadorDaVez())
+                            {
+                                AtualizarMinhasCartas();
+                                ProcessarPromocao();
+                            }
                             break;
 
-                        case 'V':
-                            ProcessarVotacao();
+                        case 'V': // Votação
+                            if (JogadorDaVez())
+                            {
+                                AtualizarMinhasCartas();
+                                ProcessarVotacao();
+                            }
                             break;
+                    }
 
-                        default:
-                            Console.WriteLine($"Fase desconhecida: {faseAtual}");
-                            break;
+                    // Verifica se o jogo terminou
+                    VerificarFimDeJogo();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro no timer: {ex.Message}");
+            }
+            finally
+            {
+                tmrVerificaVez.Enabled = true;
+            }
+        }
+        private void VerificarFimDeJogo()
+        {
+            try
+            {
+                string estado = Jogo.VerificarVez(Convert.ToInt32(txtIDpartida.Text));
+                if (estado.Contains(",E,"))
+                {
+                    tmrVerificaVez.Enabled = false;
+                    string[] partes = estado.Split(',');
+
+                    if (partes.Length > 4)
+                    {
+                        lblControle.Text += $"=== FIM DE JOGO ===\nVencedor: {partes[4]}\n";
+                    }
+                    else
+                    {
+                        lblControle.Text += "=== FIM DE JOGO ===\n";
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERRO no timer: {ex.Message}");
-            }
-            finally
-            {
-                tmrVerificaVez.Enabled = true;
-                Console.WriteLine("--- Verificação de turno concluída ---");
+                Console.WriteLine($"Erro ao verificar fim de jogo: {ex.Message}");
             }
         }
         private void ReiniciarRodada()
         {
             try
             {
-                // 1. Limpa todas as cartas visuais
-                var cartas = Controls.OfType<PictureBox>().Where(p => p.Tag != null).ToList();
-                foreach (var carta in cartas)
-                {
-                    Controls.Remove(carta);
-                    carta.Dispose();
-                }
-
-                // 2. Reinicia as estruturas de dados
+                // Limpa o estado local
                 personagensColocados.Clear();
                 setores = new Dictionary<int, List<string>>()
         {
@@ -558,15 +661,24 @@ namespace BOxford
             {10, new List<string>()}
         };
 
-                // 3. Atualiza o contador de rodadas
+                // Limpa o tabuleiro visual
+                var cartas = Controls.OfType<PictureBox>().Where(p => p.Tag != null).ToList();
+                foreach (var carta in cartas)
+                {
+                    Controls.Remove(carta);
+                    carta.Dispose();
+                }
+
+                // Atualiza a interface
+                lblControle.Text += "=== NOVA RODADA INICIADA ===\n";
                 rodadaAtual++;
                 lblControle.Text = $"Rodada: {rodadaAtual}";
 
-                // 4. Força uma sincronização completa com o servidor
-                SincronizarEstadoTabuleiro(forcarAtualizacao: true);
-
-                lblControle.Text += "=== NOVA RODADA INICIADA ===\n";
-                Console.WriteLine("Rodada reiniciada com sucesso");
+                // Se for a vez do jogador, começa imediatamente a nova rodada
+                if (JogadorDaVez())
+                {
+                    ProcessarSetup();
+                }
             }
             catch (Exception ex)
             {
@@ -647,29 +759,41 @@ namespace BOxford
         {
             try
             {
-                // Verifica se é o jogador atual que deve agir
-                if (lblIdJogador.Text != lblIdVez.Text) return;
+                if (!JogadorDaVez()) return;
 
-                string personagem = SortearPersonagemDisponivel();
-                if (personagem == null)
+                AtualizarMinhasCartas();
+                SincronizarEstadoTabuleiro();
+
+                // 1. Escolhe a melhor carta disponível
+                string personagem = minhasCartas.FirstOrDefault();
+                if (personagem == null) return;
+
+                // 2. Escolhe o setor estrategicamente
+                int setor = EscolherMelhorSetorSetup();
+
+                if (setor != -1)
                 {
-                    Console.WriteLine("Nenhum personagem disponível para setup");
-                    return;
+                    PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, personagem, setor);
+                    lblControle.Text += $"Posicionado estrategicamente: {personagem} no setor {setor}\n";
                 }
-
-                int setor = SortearSetorDisponivel();
-                if (setor == -1)
-                {
-                    Console.WriteLine("Nenhum setor disponível para setup");
-                    return;
-                }
-
-                PosicionarPersonagem(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, personagem, setor);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Erro no ProcessarSetup: {ex.Message}");
             }
+        }
+        private int EscolherMelhorSetorSetup()
+        {
+            // Estratégia: preferir setores com menos cartas para distribuir melhor
+            var setoresDisponiveis = setores
+                .Where(kv => kv.Key >= 1 && kv.Key <= 4)  // Apenas setores 1-4 no setup
+                .Where(kv => kv.Value.Count < 4)          // Com espaço disponível
+                .OrderBy(kv => kv.Value.Count)            // Preferir setores menos ocupados
+                .ThenBy(kv => kv.Key)                     // Em caso de empate, escolher o menor número
+                .Select(kv => kv.Key)
+                .ToList();
+
+            return setoresDisponiveis.FirstOrDefault(-1);
         }
         private void AtualizarTabuleiroVisual()
         {
@@ -703,7 +827,69 @@ namespace BOxford
         }
         private void ProcessarPromocao()
         {
-            PromoverPersonagens();
+            try
+            {
+                if (!JogadorDaVez()) return;
+
+                AtualizarMinhasCartas();
+                SincronizarEstadoTabuleiro();
+
+                // Prioridade 1: Promover para o KingsMe se possível
+                if (setores.ContainsKey(5) && setores[5].Count > 0 &&
+                    (!setores.ContainsKey(10) || setores[10].Count == 0))
+                {
+                    // Escolhe o melhor personagem no setor 5
+                    var melhorPersonagem = setores[5]
+                        .OrderByDescending(p => rankingPersonagens.GetValueOrDefault(p, 0))
+                        .FirstOrDefault();
+
+                    if (melhorPersonagem != null)
+                    {
+                        string resultado = Jogo.Promover(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, melhorPersonagem);
+
+                        if (!resultado.StartsWith("ERRO:"))
+                        {
+                            lblControle.Text += $"Promovido estrategicamente para KingsMe: {melhorPersonagem}\n";
+                            return;
+                        }
+                    }
+                }
+
+                // Prioridade 2: Promover personagens valiosos em setores inferiores
+                for (int setorAtual = 1; setorAtual <= 4; setorAtual++)
+                {
+                    if (setores.ContainsKey(setorAtual) && setores[setorAtual].Count > 0)
+                    {
+                        int setorDestino = setorAtual + 1;
+
+                        // Verifica se o setor de destino tem espaço
+                        if (!setores.ContainsKey(setorDestino) || setores[setorDestino].Count < 4)
+                        {
+                            // Escolhe o melhor personagem neste setor
+                            var melhorPersonagem = setores[setorAtual]
+                                .OrderByDescending(p => rankingPersonagens.GetValueOrDefault(p, 0))
+                                .FirstOrDefault();
+
+                            if (melhorPersonagem != null)
+                            {
+                                string resultado = Jogo.Promover(Convert.ToInt32(txtIDjogador.Text), txtSenha.Text, melhorPersonagem);
+
+                                if (!resultado.StartsWith("ERRO:"))
+                                {
+                                    lblControle.Text += $"Promovido estrategicamente: {melhorPersonagem} (Setor {setorAtual}->{setorDestino})\n";
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                lblControle.Text += "Nenhuma promoção estratégica possível no momento.\n";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Erro em ProcessarPromocao: {ex.Message}");
+            }
         }
         private bool votacaoEmAndamento = false;
         private string ultimaCartaRei = "";
@@ -712,176 +898,120 @@ namespace BOxford
         {
             try
             {
-                Console.WriteLine("=== VERIFICANDO VOTAÇÃO ===");
+                if (!JogadorDaVez() || votacaoConcluida) return;
 
-                // Verifica se há carta no setor 10
+                SincronizarEstadoTabuleiro();
+
                 if (setores.ContainsKey(10) && setores[10].Count > 0)
                 {
-                    string cartaAtual = setores[10][0];
+                    string cartaRei = setores[10][0];
+                    string voto = EscolherVotoEstrategico(cartaRei);
 
-                    // Se é uma nova carta ou primeira votação
-                    if (!votacaoEmAndamento || cartaAtual != ultimaCartaRei)
+                    string resultado = Jogo.Votar(
+                        Convert.ToInt32(txtIDjogador.Text),
+                        txtSenha.Text,
+                        voto
+                    );
+
+                    if (!resultado.StartsWith("ERRO:"))
                     {
-                        Console.WriteLine($"Nova carta no setor 10: {cartaAtual}");
-                        ultimaCartaRei = cartaAtual;
-                        votacaoEmAndamento = true;
+                        votacaoConcluida = true;
+                        lblControle.Text += $"Voto estratégico: {voto} para {cartaRei}\n";
 
-                        // Verifica se é a vez do jogador
-                        if (JogadorDaVez())
+                        if (voto == "S")
                         {
-                            Console.WriteLine("É a vez do jogador - votando...");
-                            VotarAutomaticamente();
-                        }
-                        else
-                        {
-                            Console.WriteLine("Não é a vez do jogador - aguardando...");
+                            reiEleito = true;
                         }
                     }
-                }
-                else
-                {
-                    votacaoEmAndamento = false;
-                    ultimaCartaRei = "";
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERRO em ProcessarVotacao: {ex.Message}");
-                votacaoEmAndamento = false;
+                Console.WriteLine($"Erro em ProcessarVotacao: {ex.Message}");
             }
+        }
+        private string EscolherVotoEstrategico(string cartaRei)
+        {
+            // Estratégia básica: votar Sim se for uma das minhas cartas ou se for muito valiosa
+            if (minhasCartas.Contains(cartaRei))
+            {
+                return "S"; // Sempre voto a favor das minhas cartas
+            }
+
+            // Se não for minha carta, voto contra as mais valiosas
+            int valorCarta = rankingPersonagens.GetValueOrDefault(cartaRei, 0);
+
+            // Voto "Sim" apenas para cartas medianas (não quero as muito boas nem as muito ruins)
+            if (valorCarta >= 3 && valorCarta <= 5)
+            {
+                return "S";
+            }
+
+            return "N";
         }
         private bool JogadorConectado()
         {
             return !string.IsNullOrEmpty(txtIDjogador.Text) &&
                    !string.IsNullOrEmpty(txtSenha.Text) &&
-                   !string.IsNullOrEmpty(txtIDpartida.Text);
-        }
-        private string EscolherVoto(string cartaRei)
-        {
-            // Implemente sua estratégia de voto aqui
-            // Exemplo 1: Sempre votar Sim
-            return "S";
-
-            // Exemplo 2: Voto aleatório
-            // return random.Next(2) == 0 ? "S" : "N";
-
-            // Exemplo 3: Estratégia baseada em regras
-            // if (cartaRei == "A") return "S";
-            // else return "N";
-        }
-        private void VotarAutomaticamente()
-        {
-            try
-            {
-                if (!setores.ContainsKey(10) || setores[10].Count == 0)
-                {
-                    Console.WriteLine("AVISO: Nenhuma carta no setor 10 para votar");
-                    return;
-                }
-
-                string cartaRei = setores[10][0];
-                Console.WriteLine($"Preparando voto para: {cartaRei}");
-
-                // Escolhe o voto (S ou N)
-                string voto = EscolherVoto(cartaRei); // Você pode implementar sua estratégia aqui
-
-                Console.WriteLine($"Enviando voto: {voto}");
-
-                string resultado = Jogo.Votar(
-                    Convert.ToInt32(txtIDjogador.Text),
-                    txtSenha.Text,
-                    voto
-                );
-
-                Console.WriteLine($"Resposta do servidor: {resultado}");
-
-                if (!resultado.StartsWith("ERRO:"))
-                {
-                    lblControle.Text += $"Voto {voto} registrado para {cartaRei}\n";
-
-                    if (resultado.Contains("ELEITA"))
-                    {
-                        lblControle.Text += $"{cartaRei} foi eleita Rei!\n";
-                        votacaoEmAndamento = false; // Reseta para próxima votação
-                    }
-                }
-                else
-                {
-                    lblControle.Text += $"ERRO ao votar: {resultado}\n";
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"ERRO em VotarAutomaticamente: {ex.Message}");
-            }
+                   !string.IsNullOrEmpty(txtIDpartida.Text) &&
+                   int.TryParse(txtIDjogador.Text, out _) &&
+                   int.TryParse(txtIDpartida.Text, out _);
         }
         private void PromoverPersonagens()
         {
-            int idJogador = Convert.ToInt32(txtIDjogador.Text);
-            string senha = txtSenha.Text;
-
-            // Lista todos os personagens que podem ser promovidos
-            var candidatosPromocao = new List<(int setor, string personagem)>();
-
-            for (int setorAtual = 1; setorAtual <= 5; setorAtual++)
+            try
             {
-                if (!setores.ContainsKey(setorAtual) || setores[setorAtual].Count == 0)
-                    continue;
+                // Primeiro sincroniza com o estado real do servidor
+                SincronizarEstadoTabuleiro();
 
-                int proximoSetor = (setorAtual == 5) ? 10 : setorAtual + 1;
+                int idJogador = Convert.ToInt32(txtIDjogador.Text);
+                string senha = txtSenha.Text;
 
-                // Verifica se o próximo setor tem espaço
-                bool podePromover = (proximoSetor == 10) ?
-                    (!setores.ContainsKey(10) || setores[10].Count < 1) :
-                    (!setores.ContainsKey(proximoSetor) || setores[proximoSetor].Count < 4);
-
-                if (podePromover)
+                // Lista de prioridade: tenta promover para o KingsMe primeiro
+                if (setores.ContainsKey(5) && setores[5].Count > 0 &&
+                    (!setores.ContainsKey(10) || setores[10].Count == 0))
                 {
-                    // Adiciona todos os personagens deste setor como candidatos
-                    candidatosPromocao.AddRange(
-                        setores[setorAtual].Select(p => (setorAtual, p))
-                    );
+                    string personagem = setores[5][0];
+                    string resultado = Jogo.Promover(idJogador, senha, personagem);
+
+                    if (!resultado.StartsWith("ERRO:"))
+                    {
+                        lblControle.Text += $"Promovido para KingsMe: {personagem}\n";
+                        return;
+                    }
                 }
-            }
 
-            if (candidatosPromocao.Count == 0)
-            {
+                // Se não conseguiu promover para KingsMe, tenta promover nos outros setores
+                for (int setorAtual = 1; setorAtual <= 4; setorAtual++)
+                {
+                    if (setores.ContainsKey(setorAtual) && setores[setorAtual].Count > 0)
+                    {
+                        int setorDestino = setorAtual + 1;
+
+                        // Verifica se o setor de destino tem espaço
+                        if (!setores.ContainsKey(setorDestino))
+                            setores[setorDestino] = new List<string>();
+
+                        if (setores[setorDestino].Count < 4)
+                        {
+                            string personagem = setores[setorAtual][0];
+                            string resultado = Jogo.Promover(idJogador, senha, personagem);
+
+                            if (!resultado.StartsWith("ERRO:"))
+                            {
+                                lblControle.Text += $"Promovido: {personagem} (Setor {setorAtual} -> {setorDestino})\n";
+                                return;
+                            }
+                        }
+                    }
+                }
+
                 lblControle.Text += "Nenhuma promoção possível no momento.\n";
-                return;
             }
-
-            // Seleciona aleatoriamente um candidato
-            var (setorOrigem, personagem) = candidatosPromocao[random.Next(candidatosPromocao.Count)];
-            int setorDestino = (setorOrigem == 5) ? 10 : setorOrigem + 1;
-
-            string resultado = Jogo.Promover(idJogador, senha, personagem);
-
-            if (!resultado.StartsWith("ERRO:"))
+            catch (Exception ex)
             {
-                setores[setorOrigem].Remove(personagem);
-
-                if (!setores.ContainsKey(setorDestino))
-                    setores[setorDestino] = new List<string>();
-
-                setores[setorDestino].Add(personagem);
-
-                lblControle.Text += $"Promovido aleatoriamente: {personagem} ({setorOrigem}->{setorDestino})\n";
+                Console.WriteLine($"Erro em PromoverPersonagens: {ex.Message}");
             }
-            else
-            {
-                lblControle.Text += $"Falha ao promover {personagem}: {resultado}\n";
-            }
-            string partida = txtIDpartida.Text;
-            int partidaId = Convert.ToInt32(partida);
-
-            // Obtém o ID do jogador que tem a vez
-            string retorno = Jogo.VerificarVez(partidaId).Trim();
-            string[] vez = retorno.Split(',');
-            string[] linhas = retorno.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
-
-            string estadoTabuleiro = string.Join("\n", linhas.Skip(1));
-
-            AtualizarTabuleiro(estadoTabuleiro);
         }
         private string SortearPersonagemDisponivel()
         {
