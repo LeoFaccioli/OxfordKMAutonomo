@@ -393,6 +393,7 @@
             txtPersonagemSelecionado.Name = "txtPersonagemSelecionado";
             txtPersonagemSelecionado.Size = new Size(138, 23);
             txtPersonagemSelecionado.TabIndex = 43;
+            txtPersonagemSelecionado.Visible = false;
             // 
             // txtPersonagemSetor
             // 
@@ -400,6 +401,7 @@
             txtPersonagemSetor.Name = "txtPersonagemSetor";
             txtPersonagemSetor.Size = new Size(138, 23);
             txtPersonagemSetor.TabIndex = 44;
+            txtPersonagemSetor.Visible = false;
             // 
             // lblPersonagemAPosicionar
             // 
@@ -409,6 +411,7 @@
             lblPersonagemAPosicionar.Size = new Size(73, 15);
             lblPersonagemAPosicionar.TabIndex = 45;
             lblPersonagemAPosicionar.Text = "Personagem";
+            lblPersonagemAPosicionar.Visible = false;
             // 
             // lblPersonagemSetor
             // 
@@ -418,6 +421,7 @@
             lblPersonagemSetor.Size = new Size(34, 15);
             lblPersonagemSetor.TabIndex = 46;
             lblPersonagemSetor.Text = "Setor";
+            lblPersonagemSetor.Visible = false;
             // 
             // btnPosicionarPersonagem
             // 
@@ -427,6 +431,7 @@
             btnPosicionarPersonagem.TabIndex = 47;
             btnPosicionarPersonagem.Text = "Posicionar";
             btnPosicionarPersonagem.UseVisualStyleBackColor = true;
+            btnPosicionarPersonagem.Visible = false;
             btnPosicionarPersonagem.Click += btnPosicionarPersonagem_Click;
             // 
             // btnVerificarVez
@@ -509,6 +514,7 @@
             btnPromoverPersonagem.TabIndex = 58;
             btnPromoverPersonagem.Text = "Promover";
             btnPromoverPersonagem.UseVisualStyleBackColor = true;
+            btnPromoverPersonagem.Visible = false;
             btnPromoverPersonagem.Click += btnPromoverPersonagem_Click;
             // 
             // lblerro
@@ -535,6 +541,7 @@
             lblControle.Size = new Size(20, 15);
             lblControle.TabIndex = 59;
             lblControle.Text = "Pe";
+            lblControle.Visible = false;
             // 
             // lblStatus
             // 
